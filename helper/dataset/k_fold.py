@@ -1,20 +1,17 @@
-class DracDataset(Dataset):
+from template import TemplateDataset
+
+class KFoldDataset(TemplateDataset):
     # =============================================================================
     #
     # Dataset (Helper Class)
     #
     # =============================================================================
 
-    def __init__(self, dataset="train", max_k=5):
+    def __init__(self, csv_data_path, dataset="train", max_k=5):
+        
         self.transforms = transforms.Compose(self._get_transforms())
-        self.csv_data_original = pd.read_csv("data/C. Diabetic Retinopathy Grading/2. Groundtruths/a. DRAC2022_ Diabetic Retinopathy Grading_Training Labels.csv",
-                             delimiter=",")
-
-        self.csv_data_original = self.csv_data_original.rename(columns={'image name': 'image_name', 'DR grade': 'DR_grade'})
-
-        if True: # True for smaller dataset
-            self.csv_data_original = self.csv_data_original[0:160]
-
+        self.csv_data_original = pd.read_csv(csv_data_path, delimiter=";")
+        
         self.csv_data_original = self.csv_data_original.sample(frac=1, random_state=79)        
 
         self.k_ids = []
@@ -68,24 +65,12 @@ class DracDataset(Dataset):
     def _get_transforms(self):
         # =============================================================================
         # notes:
-        #   overwritten for training set
         # =============================================================================
-        
-        if False:
-            # https://pytorch.org/vision/main/generated/torchvision.transforms.FiveCrop.html#torchvision.transforms.FiveCrop
-            transform = Compose([
-                FiveCrop(size), # this is a list of PIL Images
-                Lambda(lambda crops: torch.stack([PILToTensor()(crop) for crop in crops])) # returns a 4D tensor
-            ])
-            #In your test loop you can do the following:
-            input, target = batch # input is a 5d tensor, target is 2d
-            bs, ncrops, c, h, w = input.size()
-            result = model(input.view(-1, c, h, w)) # fuse batch size and ncrops
-            result_avg = result.view(bs, ncrops, -1).mean(1) # avg over crops
 
         transform_list = []
         transform_list.append(ResizeCrop(image_size=512))
         transform_list.append(ToTensor())
         transform_list.append(Normalise())
         return transform_list
+
     
