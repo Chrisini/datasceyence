@@ -1,4 +1,4 @@
-from loss.template import *
+from compute.loss.template import *
 
 class KappaLoss(TemplateLoss):
     # =============================================================================

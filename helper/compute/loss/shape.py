@@ -1,4 +1,4 @@
-from loss.template import *
+from compute.loss.template import *
     
 from PIL import Image
 from scipy.ndimage import distance_transform_edt as distance
@@ -37,12 +37,13 @@ def compute_sdf(img_gt, out_shape):
     return normalized_sdf
     
     
-class SignedDistanceLoss(TemplateLoss):
+class ShapeLoss(TemplateLoss):
+    # SignedDistanceLoss
     # AAAI_sdf_loss
     # https://github.com/JunMa11/SegWithDistMap/blob/master/code/train_LA_AAAISDF.py
     
     def __init__(self):
-        super(SignedDistanceLoss, self).__init__()
+        super(ShapeLoss, self).__init__()
         self.smooth = 1e-5
         
     def forward(self, model_output, ground_truth):
