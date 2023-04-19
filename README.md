@@ -15,7 +15,7 @@ Collection of my deep learning in ophthalmology projects - built as a framework
 | **helper.compute.metrics** | Metrics (fscore, jac, rec, acc, kappa, ...) |
 | **examples** | Unit tests for helper modules |
 | **configs** | Settings |
-
+| **data** | csv data preparation for dataloader | 
 
 ## Loss functions in **helper.compute.loss**
 | Component | Loss+Source | Type | examples.unittest_ |
@@ -31,8 +31,8 @@ Collection of my deep learning in ophthalmology projects - built as a framework
 ## Models in **helper.models**
 | Component | Model+Source | Type | examples.unittest_ |
 | --- | --- | --- | --- |
-| **model.early_block** | ShuffleNet + MLP, ShuffleNet + conv1x1, ResNet layers, U-Net | encoder block(s), early | not tested yet |
-| **model.late_block** | ShuffleNet + MLP, ShuffleNet + conv1x1, ResNet layers, U-Net | encoder block(s), late | not tested yet |
+| **model.early_block** | ShuffleNet+MLP, ShuffleNet+conv1x1, ShuffleNet+linear layer | encoder block(s), early | not tested yet |
+| **model.late_block** | late ResNet layers | encoder block(s), late | not tested yet |
 | **model.fusion_block** | conv1x1 | fusion between blocks or between block(s) and head(s) | not tested yet |
 | **model.head_block** | linear layer or seg head | head(s) | not tested yet |
 
@@ -41,3 +41,10 @@ Collection of my deep learning in ophthalmology projects - built as a framework
 | --- | --- | --- | --- |
 | **visualisation.deepdream**| [DeepDream](https://github.com/juanigp/Pytorch-Deep-Dream/blob/master/Deep_Dream.ipynb) | layer ?? | unittest_vis_deepdream |
 | **visualisation.feature_map**| Feature Map | layer ?? | unittest_vis_feature_map |
+
+
+## Data
+Guide on how to write/change the data script
+* must contain: img_path (absolute path)
+* can contain: lbl_whatever, lbl_whatever2, ... (for numeric labels)
+* can contain: msk_whatever, msk_whatever2, ... (for masks, absolute path)
