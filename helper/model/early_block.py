@@ -3,7 +3,7 @@ import os
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from torchvision.models import resnet50, shufflenet_v2_x1_0
+from torchvision.models import resnet50, shufflenet_v2_x1_0, ShuffleNet_V2_X1_0_Weights
 
 class DecentBlock_Early_Shuffle_MLP(nn.Module):
     # =============================================================================
@@ -26,7 +26,7 @@ class DecentBlock_Early_Shuffle_MLP(nn.Module):
         
         # encoder
         try:
-            shufflenet = shufflenet_v2_x1_0(ShuffleNet_V2_X1_0_Weights.IMAGENET1K_V1)
+            shufflenet = shufflenet_v2_x1_0(weights=ShuffleNet_V2_X1_0_Weights.IMAGENET1K_V1)
         except: 
             shufflenet = shufflenet_v2_x1_0(pretrained=True)
                     
@@ -130,7 +130,7 @@ class DecentBlock_Early_Shuffle_Linear(nn.Module):
         
         # encoder
         try:
-            shufflenet = shufflenet_v2_x1_0(ShuffleNet_V2_X1_0_Weights.IMAGENET1K_V1)
+            shufflenet = shufflenet_v2_x1_0(weights=ShuffleNet_V2_X1_0_Weights.IMAGENET1K_V1)
         except: 
             shufflenet = shufflenet_v2_x1_0(pretrained=True)
             

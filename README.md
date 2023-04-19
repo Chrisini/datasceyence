@@ -26,8 +26,12 @@
 
 ## Models in **helper.models**
 | Component | Model+Source | Type | examples.unittest_ |
-| **model.baseline** | ResNet50 | classification | not tested yet |
-| **model.decent_block** | ShuffleNet + MLP, ShuffleNet + conv1x1, ResNet layers, U-Net | encoder block(s), early vs late | not tested yet |
-| **model.decent_fusion** | conv1x1 | fusion between blocks or between block(s) and head(s) | not tested yet |
-| **model.decent_head** | linear layer or seg head | head(s) | not tested yet |
-| **model.decent_net** | combined block(s), fusion (optional) and head | final classification or segmentation network | not tested yet |
+| **model.early_block** | ShuffleNet + MLP, ShuffleNet + conv1x1, ResNet layers, U-Net | encoder block(s), early | not tested yet |
+| **model.late_block** | ShuffleNet + MLP, ShuffleNet + conv1x1, ResNet layers, U-Net | encoder block(s), late | not tested yet |
+| **model.fusion_block** | conv1x1 | fusion between blocks or between block(s) and head(s) | not tested yet |
+| **model.head_block** | linear layer or seg head | head(s) | not tested yet |
+
+
+## Explainability, Interpretability and Visualisation
+| Component | Method+Source | Type | examples.unittest_ |
+| **visualisation.deepdream**| [DeepDream](https://github.com/juanigp/Pytorch-Deep-Dream/blob/master/Deep_Dream.ipynb) | layer ?? | unittest_vis_deepdream |
