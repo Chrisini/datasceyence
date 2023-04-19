@@ -11,8 +11,6 @@ from PIL import Image
 class DeepDream():
     # =============================================================================
     # https://github.com/juanigp/Pytorch-Deep-Dream/blob/master/Deep_Dream.ipynb
-    # https://towardsdatascience.com/how-to-visualize-convolutional-features-in-40-lines-of-code-70b7d87b0030
-    # https://towardsdatascience.com/convolutional-neural-network-feature-map-and-filter-visualization-f75012a5a49c
     # =============================================================================
 
     def __init__(self, model, layer, device="cpu", ckpt_net_path=None, iterations=200, lr=1):

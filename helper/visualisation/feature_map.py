@@ -1,49 +1,79 @@
+from visualisation.hook import Hook
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+import torch
+
+from PIL import Image
+
+import random
 
 
-# =============================================================================
-# Feature map visualisation using hooks       
-# A high activation means a certain feature was found. 
-# A feature map is called the activations of a layer after the convolutional operation.
-# =============================================================================
-def visualise_activation(self, eye, configs, iteration, image_id):
-    activation = {}
-    eye_model = configs.eye_model
+class FeatureMap():
+    # =============================================================================
+    # ??? https://towardsdatascience.com/how-to-visualize-convolutional-features-in-40-lines-of-code-70b7d87b0030
+    # ??? https://towardsdatascience.com/convolutional-neural-network-feature-map-and-filter-visualization-f75012a5a49c
+    # =============================================================================
 
-    def get_activation(name):
-        def hook(model, input, output):
-            activation[name] = output.detach()
+    def __init__(self, model, layer, device="cpu", ckpt_net_path=None, iterations=200, lr=1):
+        # =============================================================================
+        # Initialise iter, lr, model, layer
+        # =============================================================================
 
-        return hook
+        # settings for dreams
+        self.iterations=iterations
+        self.lr=lr
+        self.device = device
 
-    configs.eye_model.model.layer3[0].conv1.register_forward_hook(get_activation('conv1'))
+        # model
+        if ckpt_net_path is not None:
+            model.load_state_dict(torch.load(ckpt_net_path)["model"]) # 'dir/decentnet_epoch_19_0.3627.ckpt'
+        self.model = model.eval()
+        
+        # the (conv) layer to be visualised
+        self.layer = layer
+        print("Layer:", self.layer)
 
-    for i, image in enumerate(eye['image']):
-        image = image.to(configs.device)
+    def run(self, img_tensor):
+        # =============================================================================
+        # Feature map visualisation using hooks       
+        # A high activation means a certain feature was found. 
+        # A feature map is called the activations of a layer after the convolutional operation.
+        # =============================================================================
+        
+        self.img_tensor = img_tensor
 
-        image.unsqueeze_(0)
-        output = configs.eye_model(image)
+        self.img_tensor = self.img_tensor.to(self.device).unsqueeze_(0)
+        hook = Hook(self.layer)
+        output = self.model(img_tensor)
+        self.feature_maps = hook.output.squeeze()
 
-        act = activation['conv1'].squeeze()
-
-        # print("confusion", type(activation['conv1'].squeeze()))
-
-        fig, axarr = plt.subplots(4, 4)  # act.size(0)
+    def plot(self):
+        # =============================================================================
+        # plot 15 random feature maps + original image
+        # =============================================================================
+        fig, axarr = plt.subplots(4, 4)
         plt.figure()
-        # print(act.size(0))
-        amount = act.shape[0]
+        amount = self.feature_maps.shape[0]
         random_samples = random.sample(range(0, amount), 16)
-        counter = 0            
+        counter = 0      
         for idx in range(0, 4):
             for idx2 in range(0, 4):
                 axarr[idx, idx2].axis('off')
-                axarr[idx, idx2].imshow(act[random_samples[counter]].cpu())
+                axarr[idx, idx2].imshow(self.feature_maps[random_samples[counter]].cpu().detach().numpy())
                 counter += 1
-
+                
         # overwrite first image with original image        
-        axarr[0,0].imshow(image.squeeze().cpu().detach().numpy().transpose(1, 2, 0))
-
-        if not os.path.exists("results/features/"):
-            os.makedirs("results/features/")
-        fig.savefig(f'results/features/{configs.name}_it{iteration}_{image_id}.png', bbox_inches='tight')
+        axarr[0,0].imshow(self.img_tensor.squeeze().cpu().detach().numpy().transpose(1, 2, 0))
 
         plt.close()
+    
+
+    
+    
+    
+    
+    
+    
+

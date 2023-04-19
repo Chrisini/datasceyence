@@ -1,5 +1,9 @@
 # medical_ai
 
+Collection of my deep learning in ophthalmology projects - built as a framework
+
+
+## Explanation of modules
 
 | Component | Description |
 | --- | --- |
@@ -31,7 +35,7 @@
 | **model.fusion_block** | conv1x1 | fusion between blocks or between block(s) and head(s) | not tested yet |
 | **model.head_block** | linear layer or seg head | head(s) | not tested yet |
 
-
-## Explainability, Interpretability and Visualisation
+## Explainability, Interpretability and Visualisation in **helper.visualisation**
 | Component | Method+Source | Type | examples.unittest_ |
 | **visualisation.deepdream**| [DeepDream](https://github.com/juanigp/Pytorch-Deep-Dream/blob/master/Deep_Dream.ipynb) | layer ?? | unittest_vis_deepdream |
+| **visualisation.feature_map**| Feature Map | layer ?? | unittest_vis_feature_map |
