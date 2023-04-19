@@ -30,6 +30,7 @@ Collection of my deep learning in ophthalmology projects - built as a framework
 
 ## Models in **helper.models**
 | Component | Model+Source | Type | examples.unittest_ |
+| --- | --- | --- | --- |
 | **model.early_block** | ShuffleNet + MLP, ShuffleNet + conv1x1, ResNet layers, U-Net | encoder block(s), early | not tested yet |
 | **model.late_block** | ShuffleNet + MLP, ShuffleNet + conv1x1, ResNet layers, U-Net | encoder block(s), late | not tested yet |
 | **model.fusion_block** | conv1x1 | fusion between blocks or between block(s) and head(s) | not tested yet |
@@ -37,5 +38,6 @@ Collection of my deep learning in ophthalmology projects - built as a framework
 
 ## Explainability, Interpretability and Visualisation in **helper.visualisation**
 | Component | Method+Source | Type | examples.unittest_ |
+| --- | --- | --- | --- |
 | **visualisation.deepdream**| [DeepDream](https://github.com/juanigp/Pytorch-Deep-Dream/blob/master/Deep_Dream.ipynb) | layer ?? | unittest_vis_deepdream |
 | **visualisation.feature_map**| Feature Map | layer ?? | unittest_vis_feature_map |
