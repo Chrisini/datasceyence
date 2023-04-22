@@ -1,8 +1,0 @@
-key:value
-experiment_name:tmp
-encoder_name:resnext50_32x4d
-encoder_weights:imagenet
-in_channels:1
-classes:2
-optimiser:adam
-a:test

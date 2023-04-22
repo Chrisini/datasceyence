@@ -54,7 +54,7 @@ class FeatureMap():
         # plot 15 random feature maps + original image
         # =============================================================================
         fig, axarr = plt.subplots(4, 4)
-        plt.figure()
+        plt.figure(figsize=(100,100))
         amount = self.feature_maps.shape[0]
         random_samples = random.sample(range(0, amount), 16)
         counter = 0      

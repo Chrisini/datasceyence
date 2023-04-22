@@ -52,8 +52,8 @@ class DeepDream():
         self.img_tensor = img_tensor
 
         for i in range(self.iterations):
-          gradients = self._get_gradients(self.img_tensor).data
-          self.img_tensor.data = self.img_tensor.data + self.lr * gradients
+            gradients = self._get_gradients(self.img_tensor).data
+            self.img_tensor.data = self.img_tensor.data + self.lr * gradients
         
         # make pillow image
         img_out = self.img_tensor.detach().cpu()
@@ -62,11 +62,11 @@ class DeepDream():
         img_out = Image.fromarray(np.uint8(img_out * 255))
         self.img_pil = img_out
 
-    def plot(self):
+    def plot(self, size=5):
         # =============================================================================
         # Plot torch dream
         # =============================================================================
         # img = img.resize(orig_size)
-        fig = plt.figure(figsize = (10 , 10))
+        fig = plt.figure(figsize = (size , size))
         plt.imshow(self.img_pil)
 

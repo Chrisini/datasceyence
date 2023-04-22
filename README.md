@@ -2,6 +2,11 @@
 
 Collection of my deep learning in ophthalmology projects - built as a framework
 
+Inspired by:
+* [PixelSSL](https://github.com/ZHKKKe/PixelSSL) 
+
+Generally, class functions with prefix **"run_"** can be called. For any sort of logging or plotting, call **"log"** functions
+
 
 ## Explanation of modules
 
@@ -41,10 +46,12 @@ Collection of my deep learning in ophthalmology projects - built as a framework
 | --- | --- | --- | --- |
 | **visualisation.deepdream**| [DeepDream](https://github.com/juanigp/Pytorch-Deep-Dream/blob/master/Deep_Dream.ipynb) | layer ?? | unittest_vis_deepdream |
 | **visualisation.feature_map**| Feature Map | layer ?? | unittest_vis_feature_map |
+| **visualisation.guided_backprop** | [Guided Backpropagation](https://github.com/utkuozbulak/pytorch-cnn-visualizations/blob/master/src/guided_backprop.py)| | |
 
 
 ## Data
 Guide on how to write/change the data script
 * must contain: img_path (absolute path)
+* must contain: mode (train, val, test)
 * can contain: lbl_whatever, lbl_whatever2, ... (for numeric labels)
 * can contain: msk_whatever, msk_whatever2, ... (for masks, absolute path)
