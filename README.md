@@ -1,12 +1,13 @@
-# medical_ai
+# DatascEYEnce
 
 Collection of my deep learning in ophthalmology projects - built as a framework
 
 Inspired by:
 * [PixelSSL](https://github.com/ZHKKKe/PixelSSL) 
 
-Generally, class functions with prefix **"run_"** can be called. For any sort of logging or plotting, call **"log"** functions
+## Function calls
 
+Generally, class functions with prefix **"run_"** can be called. For any sort of logging or plotting, call **"log"** functions
 
 ## Explanation of modules
 
@@ -55,3 +56,55 @@ Guide on how to write/change the data script
 * must contain: mode (train, val, test)
 * can contain: lbl_whatever, lbl_whatever2, ... (for numeric labels)
 * can contain: msk_whatever, msk_whatever2, ... (for masks, absolute path)
+
+## Commenting style 
+
+### for each class:
+
+```
+# =============================================================================
+#
+# General information, sources, ...
+#
+# =============================================================================
+```
+
+### for each function:
+
+```
+# =============================================================================
+# Describe what is going on
+# parameters:
+#    parameter1: e.g. hidden vector of shape [bsz, n_views, ...].
+#    parameter2: e.g. ground truth of shape [bsz].
+# returns:
+#    parameter2: e.g. a loss scalar.
+# writes:
+#    csv file, png images, ...
+# notes:
+#    Whatever comes into your mind
+# sources:
+#    https...
+# =============================================================================
+```
+
+### for sections:
+
+```
+# =============================================================================
+# Info about this part
+# =============================================================================
+```
+
+
+## Save and load checkpoints
+```
+state = {
+    'name': self.experiment_name,
+    'epoch': epoch, 
+    's_model': self.models["s"].state_dict(),
+    't_model': self.models["t"].state_dict(),
+    's_optim': self.optimisers["s"].state_dict(),
+    's_lrer': self.lrers["s"].state_dict()
+}
+```

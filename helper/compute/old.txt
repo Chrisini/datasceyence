@@ -1,0 +1,8 @@
+    def get_counter(self, configs, batch_iter=None, mode="train"):        
+        # choose counter for tensorboard
+        if batch_iter.lower() == "batch" and "train" in mode:
+            return configs.total_train_batch_counter
+        elif batch_iter.lower() == "batch" and "val" in mode:
+            return configs.total_val_batch_counter
+        else:
+            return configs.total_iter_counter

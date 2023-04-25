@@ -1,4 +1,4 @@
-class MixedBatchSampler(Sampler):
+class MixedBatchSampler():
     def __init__(self, original_data, n_samples_per_class_per_batch=2):
         # =============================================================================
         # source: https://stackoverflow.com/questions/66065272/customizing-the-batch-with-specific-elements

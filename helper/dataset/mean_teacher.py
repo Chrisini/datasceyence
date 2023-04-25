@@ -1,4 +1,6 @@
-class TemplateDataset(Dataset):
+from dataset.template import TemplateDataset
+
+class MeanTeacherDataset(TemplateDataset):
     # =============================================================================
     #
     # Parent Dataset

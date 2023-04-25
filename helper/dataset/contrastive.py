@@ -1,4 +1,4 @@
-from template import TemplateDataset
+from dataset.template import TemplateDataset
 
 class ContrastiveDataset(TemplateDataset):
     # =============================================================================
