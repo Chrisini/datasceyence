@@ -15,10 +15,15 @@ class DecentBlock(torch.nn.Module):
     # this class is used as early block, needs an already trained ShuffleNet
     # =============================================================================
     
-    def __init__(self, ckpt_early_blocks_path, ckpt_early_blocks, out_channels=5, device="cpu"):
+    def __init__(self, ckpt_early_blocks_path, ckpt_early_blocks, output=2, device="cpu", mode="use"):
         super(DecentBlock, self).__init__()
         
-        self.decent_block = DecentBlock_Shuffle_116OutChannels(ckpt_early_blocks_path, ckpt_early_blocks, out_channels, device)
+        if "train_mlp" in mode: 
+            self.decent_block = DecentBlock_Shuffle_MLP(out_features=output) # 128 features
+        elif "train_linear" in mode:
+            self.decent_block = DecentBlock_Shuffle_Linear(out_classes=output) # 2 classes
+        elif "use" in mode:
+            self.decent_block = DecentBlock_Shuffle_116(ckpt_early_blocks_path, ckpt_early_blocks, out_channels=output, device=device) # 5 channels
 
     def forward(self, x):
         

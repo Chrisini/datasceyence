@@ -55,11 +55,12 @@ class DecentBlock_Shuffle_MLP(torch.nn.Module):
         block_output = torch.nn.functional.normalize(x, dim=1)
         return block_output
     
-class DecentBlock_Shuffle_116OutChannels(torch.nn.Module):
+class DecentBlock_Shuffle_116(torch.nn.Module):
     # =============================================================================
     # use this
     # encoder backbone (shufflenet_v2_x1_0) + projection head (MLP)
     # output size of Net: 116 Channels
+    # then reduced to out_channel size with conv1x1
     # this feature vector is then used for the SupConLoss
 
     # Replace model head:
@@ -70,7 +71,7 @@ class DecentBlock_Shuffle_116OutChannels(torch.nn.Module):
     # =============================================================================
     
     def __init__(self, ckpt_early_blocks_path=None, ckpt_early_blocks=None, out_channels=5, device="cpu"):
-        super(DecentBlock_Shuffle_116OutChannels, self).__init__()
+        super(DecentBlock_Shuffle_116, self).__init__()
         
         self.out_channels = out_channels
         
