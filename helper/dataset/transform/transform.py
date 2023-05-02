@@ -1,4 +1,4 @@
-from transform.template import TemplateTransform
+from dataset.transform.template import TemplateTransform
 
 import torchvision.transforms
 import torchvision.transforms.functional

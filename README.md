@@ -5,9 +5,19 @@ Collection of my deep learning in ophthalmology projects - built as a framework
 Inspired by:
 * [PixelSSL](https://github.com/ZHKKKe/PixelSSL) 
 
+## Todos
+* [] need to change transforms - has to be for every item key that contains "img" not is equal to ... (same with "msk")
+
+
 ## Function calls
 
 Generally, class functions with prefix **"run_"** can be called. For any sort of logging or plotting, call **"log"** functions
+
+The main projects I focus on here are:
+
+1. DecentNet - an approach to achieve disentanglement in early layers of the model.
+2. MeanTeacher - code for domain adaptation.
+3. MultiTask - a model with multiple heads, hence able to learn multiple task simultaneously.
 
 ## Explanation of modules
 
@@ -108,7 +118,9 @@ Guide on how to write/change the data script
 
 
 ## Save and load checkpoints
+
 ```
+# student - teacher architectures such as mean teacher
 state = {
     'name': self.experiment_name,
     'epoch': epoch, 

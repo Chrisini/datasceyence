@@ -1,3 +1,5 @@
+import random
+
 class TemplateTransform(object):
     
     def __init__(self, p=1, image_size=512, zoom_factor=1):

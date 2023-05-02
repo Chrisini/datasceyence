@@ -1,0 +1,22 @@
+# cam maps
+# ANTIALIAS changes the array such that it has no third dimension (i.e. to grayscale)
+resized = self.original_image.resize((224, 224), Image.ANTIALIAS)
+self.cam_heat, self.cam_img = self.apply_colormap_on_image(resized, self.grad_image_gray.squeeze(), 'hsv')
+# self.cam_gray = self.grad_image_gray # None
+
+
+# =============================================================================
+# Grad CAM
+# =============================================================================
+
+# colored heatmap
+p = os.path.join(results_path, file_name_to_export + '_grad_cam_heatmap.png')
+save_image(self.cam_heat, p, False)
+
+# heatmap on iamge
+p = os.path.join(results_path, file_name_to_export + '_grad_cam_image.png')
+save_image(self.cam_img, p, False)
+
+# ???
+#p = os.path.join(results_path, file_name_to_export + '_grad_cam_grey.png')
+#save_image(self.cam_gray, p, False) # activation_map

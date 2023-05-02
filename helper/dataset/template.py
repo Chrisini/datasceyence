@@ -54,7 +54,7 @@ class TemplateDataset(Dataset):
         return item
     
     def get_class_labels(self):
-        return list(self.csv_data["label"])
+        return list(self.csv_data["lbl"])
     
     def get_transforms(self):
         # =============================================================================

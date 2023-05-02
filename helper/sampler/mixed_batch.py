@@ -10,15 +10,15 @@ class MixedBatchSampler(Sampler):
         # min available images per class / numbers of samples per batch 
         # defines how many batches will be returned
         # notes: 
-        #    choose random n classes - so it works for 0.5
-        #    n_samples_per_class_per_batch - values from 0.1 to max class size of smallest class (e.g. 20)
-        #    todo - make more if conditions to check
+        #    could do something with weights here, but maybe simpler to do this for the loss
         # bugs: 
-        #    if 1+: taking care of balance in batches in epoch
-        #    if smaller than 1: not taking care of balance accross batches in epoch (this is bad)
+        #    need to check the n_samples_per_class_per_batch value to be bigger than 1/n of n classes
+        #    3 classes - n_samples_per_class_per_batch needs ti be 0.34 in order to get an image out
         # sources: 
         #    https://stackoverflow.com/questions/66065272/customizing-the-batch-with-specific-elements
         # =============================================================================
+        
+        self.batches = []
         
         self.label_dict = {}
         original_labels = np.array(original_labels)
@@ -28,12 +28,18 @@ class MixedBatchSampler(Sampler):
         if self.n_samples_per_class_per_batch < 1: # if smaller than 1
             self.n_samples_per_class_per_batch = 1
         
+        self.smallest_class = np.inf
         # for label in unique labels
         for this_label in self.unique_labels:
             # get indices of label in original labels
             indices_list = np.squeeze(np.where(original_labels==this_label))
+            if self.smallest_class > len(indices_list):
+                self.smallest_class = len(indices_list)
             # save indices into dict for each unique label
             self.label_dict[this_label] = list(indices_list)
+            
+    def __len__(self):                
+        return self.smallest_class * self.unique_labels
             
     def __iter__(self):
 
@@ -47,7 +53,7 @@ class MixedBatchSampler(Sampler):
         batches = []
 
         # for each batch
-        while True:
+        for i in range(0, int(self.smallest_class/self.n_samples_per_class_per_batch)):
 
             batch = []
             # shuffle needed for n_samples_per_class_per_batch smaller than 1
@@ -61,17 +67,14 @@ class MixedBatchSampler(Sampler):
                     # and delete them from the dataset
                     del self.data[k][:self.n_samples_per_class_per_batch]
                 
-                # if length reached (needed for n_samples_per_class_per_batch smaller than 1) 
-                if len(batch) >= self.final_batch_size:
-                    break
-                    
-            # if not enough values available "we done now"
-            if len(batch) < self.final_batch_size:
-                # we ignore the incomplete batch
-                break
-            else:
-                # we use the batch
-                batches.append(batch)
+            # if enough images are available for one batch: append
+            if len(batch) >= self.final_batch_size:
+                # we need this to split patches in case n_samples_per_class_per_batch smaller than 1
+                for i in range(0, len(batch), self.final_batch_size):
+                    tmp = batch[i:i + self.final_batch_size]
+                    # only append if right size
+                    if len(tmp) == self.final_batch_size:
+                        batches.append(tmp)
             
         return iter(batches)
     

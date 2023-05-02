@@ -70,11 +70,11 @@ class DiceLoss(_Loss):
         ignore_index: Optional[int] = None,
         eps: float = 1e-7,
     ):
-        assert mode in {BINARY_MODE, MULTILABEL_MODE, MULTICLASS_MODE}
+        assert mode in {"BINARY_MODE", "MULTILABEL_MODE", "MULTICLASS_MODE"}
         super(DiceLoss, self).__init__()
         self.mode = mode
         if classes is not None:
-            assert mode != BINARY_MODE, "Masking classes is not supported with mode=binary"
+            assert mode != "BINARY_MODE", "Masking classes is not supported with mode=binary"
             classes = to_tensor(classes, dtype=torch.long)
 
         self.classes = classes
@@ -101,7 +101,7 @@ class DiceLoss(_Loss):
         num_classes = model_output.size(1)
         dims = (0, 2)
 
-        if self.mode == BINARY_MODE:
+        if self.mode == "BINARY_MODE":
             ground_truth = ground_truth.view(bs, 1, -1)
             model_output = model_output.view(bs, 1, -1)
 
@@ -110,7 +110,7 @@ class DiceLoss(_Loss):
                 model_output = model_output * mask
                 ground_truth = ground_truth * mask
 
-        if self.mode == MULTICLASS_MODE:
+        if self.mode == "MULTICLASS_MODE":
             ground_truth = ground_truth.view(bs, -1)
             model_output = model_output.view(bs, num_classes, -1)
 
@@ -124,7 +124,7 @@ class DiceLoss(_Loss):
                 ground_truth = torch.nn.functional.one_hot(ground_truth, num_classes)  # N,H*W -> N,H*W, C
                 ground_truth = ground_truth.permute(0, 2, 1)  # N, C, H*W
 
-        if self.mode == MULTILABEL_MODE:
+        if self.mode == "MULTILABEL_MODE":
             ground_truth = ground_truth.view(bs, num_classes, -1)
             model_output = model_output.view(bs, num_classes, -1)
 

@@ -53,7 +53,7 @@ class DeepDream():
 
         for i in range(self.iterations):
             gradients = self._get_gradients(self.img_tensor).data
-            self.img_tensor.data = self.img_tensor.data + self.lr * gradients
+            self.img_tensor.data = self.img_tensor.data + self.lr * gradients.data
         
         # make pillow image
         img_out = self.img_tensor.detach().cpu()

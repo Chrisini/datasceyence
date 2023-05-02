@@ -12,7 +12,7 @@ class GaussianNoiseBlock(torch.nn.Module):
     # =============================================================================
 
     def __init__(self, std):
-        super(GaussianNoiseLayer, self).__init__()
+        super(GaussianNoiseBlock, self).__init__()
         self.std = std
         self.noise = torch.zeros(0)
         self.enable = False if self.std is None else True

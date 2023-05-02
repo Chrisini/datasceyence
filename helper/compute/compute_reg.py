@@ -66,25 +66,19 @@ class L1_Reg_CU(TemplateComputingUnit):
         metrics = {}
         
         # choose ground truth and calculate regression metrics
-        if "meta" in mode:
-            ground_truth = ground_truth["meta_phase_norm"]
+    
             
-            # calculate metrics: regression
-            metrics["mse"] = mean_absolute_error(y_true = ground_truth,
-                                                 y_pred = model_output)
-            metrics["mae"] = mean_squared_error(y_true = ground_truth, 
-                                                y_pred = model_output)
-        
-            # convert ground truth to phase number
-            ground_truth = norm_to_seconds(configs, ground_truth)
-            ground_truth = seconds_to_phase_number(configs, ground_truth)
+        # calculate metrics: regression
+        metrics["mse"] = mean_absolute_error(y_true = ground_truth,
+                                             y_pred = model_output)
+        metrics["mae"] = mean_squared_error(y_true = ground_truth, 
+                                            y_pred = model_output)
 
-            
-        elif mode == "reader_val":
-            # no mse/mae possible
-            # get ground truth as phase number
-            ground_truth = ground_truth["reader_phase_number"]
-            
+        # convert ground truth to phase number
+        ground_truth = norm_to_seconds(configs, ground_truth)
+        ground_truth = seconds_to_phase_number(configs, ground_truth)
+
+
         # convert model output to phase number
         model_output = norm_to_seconds(configs, model_output)
         model_output = seconds_to_phase_number(configs, model_output)
