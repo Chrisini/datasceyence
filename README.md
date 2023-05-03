@@ -78,7 +78,7 @@ Guide on how to write/change the data script
 * can contain: msk_whatever, msk_whatever2, ... (for masks, absolute path)
 * mask convention: 0 = background (black), 1 or 255 = class (white)
 
-![mask](readme/example_mask.bmp)
+![mask](readme/example_mask.bmp | width=100)
 
 
 ## Commenting style 
