@@ -6,6 +6,8 @@ import torch
 import pandas as pd
 import torchvision.transforms
 
+import numpy as np
+
 class MeanTeacherDataset(TemplateDataset):
     # =============================================================================
     #
@@ -38,6 +40,8 @@ class MeanTeacherDataset(TemplateDataset):
     def __len__(self):
         return len(self.csv_data)
     
+
+    
     def __getitem__(self, index):
         # =============================================================================
         # parameters:
@@ -52,15 +56,15 @@ class MeanTeacherDataset(TemplateDataset):
         if torch.is_tensor(index):
             index=index.tolist()
 
-        path = self.csv_data.iloc[index]['img_path']    
+        i_path = self.csv_data.iloc[index]['img_path']    
         if self.channels == 1:
-            image = Image.open(path).convert('L')
+            image = Image.open(i_path).convert('L')
         else:
-            image = Image.open(path).convert('RGB')
+            image = Image.open(i_path).convert('RGB')
             
-        mask = self.csv_data.iloc[index]['msk_path']
-        mask = Image.open(path).convert('L')
-        
+        m_path = self.csv_data.iloc[index]['msk_path']
+        mask = Image.open(m_path).convert('L')
+                
         weight = self.csv_data.iloc[index]['weight']
         
         dataset_type = self.csv_data.iloc[index]['dataset_type']
@@ -77,7 +81,7 @@ class MeanTeacherDataset(TemplateDataset):
             # 'img_t' : image,
             'msk' : mask,
             "weight" : weight,
-            "mbs_value" : dataset_type 
+            "mbs_class" : dataset_type 
         } 
         
         if self.transforms:

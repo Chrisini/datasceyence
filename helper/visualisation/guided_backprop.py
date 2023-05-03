@@ -19,7 +19,6 @@ class GuidedBackprop():
     # Sources:
     #    https://github.com/utkuozbulak/pytorch-cnn-visualizations/blob/master/src/guided_backprop.py
     #    https://github.com/utkuozbulak/pytorch-cnn-visualizations/blob/master/src/misc_functions.py
-    #    https://github.com/utkuozbulak/pytorch-cnn-visualizations/blob/master/src/guided_gradcam.py
     # =============================================================================
 
     def __init__(self, model, experiment_name="tmp"):
@@ -76,11 +75,10 @@ class GuidedBackprop():
         # positive and negative saliency
         self.grad_image_pos, self.grad_image_neg = self.get_positive_negative_saliency(self.grad_image)
         
-        # cam maps
+        # heatmaps
         # ANTIALIAS changes the array such that it has no third dimension (i.e. to grayscale)
         resized = self.original_image.resize((224, 224), Image.ANTIALIAS)
-        self.cam_heat, self.cam_img = self.apply_colormap_on_image(resized, self.grad_image_gray.squeeze(), 'hsv')
-        # self.cam_gray = self.grad_image_gray # None
+        self.heatmap, self.heatmap_img = self.apply_colormap_on_image(resized, self.grad_image_gray.squeeze(), 'hsv')
         
 
     def save(self, results_path, file_name_to_export):
@@ -149,17 +147,12 @@ class GuidedBackprop():
         # =============================================================================
 
         # colored heatmap
-        p = os.path.join(results_path, file_name_to_export + '_grad_cam_heatmap.png')
-        save_image(self.cam_heat, p, False)
+        p = os.path.join(results_path, file_name_to_export + '_heatmap.png')
+        save_image(self.heatmap, p, False)
         
         # heatmap on iamge
-        p = os.path.join(results_path, file_name_to_export + '_grad_cam_image.png')
-        save_image(self.cam_img, p, False)
-        
-        # ???
-        #p = os.path.join(results_path, file_name_to_export + '_grad_cam_grey.png')
-        #save_image(self.cam_gray, p, False) # activation_map
-        
+        p = os.path.join(results_path, file_name_to_export + '_heatmap_image.png')
+        save_image(self.heatmap_img, p, False)
         
     def update_relus(self):
         """
