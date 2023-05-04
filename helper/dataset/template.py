@@ -14,7 +14,7 @@ class TemplateDataset(Dataset):
         self.mode = mode # train/val
         self.image_size = image_size
         
-        self.csv_data = df = pd.read_csv("data/data.csv")
+        self.csv_data = pd.read_csv("data/data.csv")
         
         self.transforms = transforms.Compose(self.get_transforms())
          
@@ -64,9 +64,13 @@ class TemplateDataset(Dataset):
         #   dream_c{label}_{patch_id}.jpg
         # =============================================================================
         
-        transform_list = []
-        transform_list.append(ResizeCrop(self.image_size))
-        transform_list.append(RandomTransforms())
-        transform_list.append(ToTensor())
-        transform_list.append(Normalise())
+        transform_list = [
+            ResizeCrop(self.image_size),
+            RandomVerticalFlip(p=0.1),
+            RandomHorizontalFlip(p=0.5),
+            RandomAugmentations(p=0.3),
+            RandomBlur(p=0.3),
+            ToTensor(),
+            Normalise()
+        ]
         return transform_list

@@ -26,6 +26,6 @@ class SeamlessCloneTransform(TemplateTransform):
     def _change_mask(self, keyword="msk"):
         if self.apply_to_mask:
             for key, value in self.item.items():
-                if keyword in key:
+                if keyword in key and value is not None:
                     # copy original transform
                     self._change_image(key)

@@ -75,10 +75,10 @@ Guide on how to write/change the data script
 * must contain: img_path (absolute path)
 * must contain: mode (train, val, test)
 * can contain: lbl_whatever, lbl_whatever2, ... (for numeric labels)
-* can contain: msk_whatever, msk_whatever2, ... (for masks, absolute path)
+* can contain: msk_path_whatever, msk_path_whatever2, ... (for masks, absolute path)
 * mask convention: 0 = background (black), 1 or 255 = class (white)
 
- <img src="readme/example_mask.bmp" width="29">
+<img src="readme/example_mask.bmp" width="100">
 
 
 ## Commenting style 
