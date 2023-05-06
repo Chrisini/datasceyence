@@ -1,5 +1,7 @@
 from torch.utils.data import Dataset
 
+import pandas as pd
+
 class TemplateDataset(Dataset):
     # =============================================================================
     #
@@ -8,16 +10,27 @@ class TemplateDataset(Dataset):
     #
     # =============================================================================
 
-    def __init__(self, mode, image_size=500):
+    def __init__(self, mode="train", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"]):
         super(TemplateDataset, self).__init__()
         
         self.mode = mode # train/val
         self.image_size = image_size
         
-        self.csv_data = pd.read_csv("data/data.csv")
+        self.channels=channels
         
-        self.transforms = transforms.Compose(self.get_transforms())
-         
+        csv_list = []
+
+        for i, filename in enumerate(csv_filenames):
+            df = pd.read_csv(filename, delimiter=";")
+            df["dataset_type"] = [i]*len(df.index)
+            csv_list.append(df)
+
+        self.csv_data = pd.concat(csv_list, axis=0, ignore_index=True)
+                
+        self.csv_data = self.csv_data[self.csv_data["mode"].str.contains(mode)]
+        
+        self.transforms = torchvision.transforms.Compose(self.get_transforms())
+        
     def __len__(self):
         return len(self.csv_data)
     

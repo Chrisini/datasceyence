@@ -14,28 +14,10 @@ class MeanTeacherTrainDataset(TemplateDataset):
     # val needs different transforms!!!! todo
     #
     # =============================================================================
-
+    
     def __init__(self, mode="train", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"]):
-        super(TemplateDataset, self).__init__()
-        
-        self.mode = mode # train/val
-        self.image_size = image_size
-        
-        self.channels=channels
-        
-        csv_list = []
+        super().__init__(mode, channels, image_size, csv_filenames)
 
-        for i, filename in enumerate(csv_filenames):
-            df = pd.read_csv(filename, delimiter=";")
-            df["dataset_type"] = [i]*len(df.index)
-            csv_list.append(df)
-
-        self.csv_data = pd.concat(csv_list, axis=0, ignore_index=True)
-                
-        self.csv_data = self.csv_data[self.csv_data["mode"].str.contains(mode)]
-        
-        self.transforms = torchvision.transforms.Compose(self.get_transforms())
-         
     def __len__(self):
         return len(self.csv_data)
     
@@ -132,25 +114,8 @@ class MeanTeacherValDataset(TemplateDataset):
     # =============================================================================
 
     def __init__(self, mode="val", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"]):
-        super(TemplateDataset, self).__init__()
+        super().__init__(mode, channels, image_size, csv_filenames)
         
-        self.mode = mode # train/val
-        self.image_size = image_size
-        
-        self.channels=channels
-        
-        csv_list = []
-
-        for i, filename in enumerate(csv_filenames):
-            df = pd.read_csv(filename, delimiter=";")
-            df["dataset_type"] = [i]*len(df.index)
-            csv_list.append(df)
-
-        # train / val / test set definition
-        self.csv_data = pd.concat(csv_list, axis=0, ignore_index=True)
-        self.csv_data = self.csv_data[self.csv_data["mode"].str.contains(mode)]
-        
-        self.transforms = torchvision.transforms.Compose(self.get_transforms())
          
     def __len__(self):
         return len(self.csv_data)

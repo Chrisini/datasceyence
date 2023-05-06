@@ -1,7 +1,7 @@
 from dataset.template import TemplateDataset
 
 
-class EyeDataset(TemplateDataset):
+class ContrativeClustersDataset(TemplateDataset):
     # =============================================================================
     #
     # Parent Dataset
@@ -9,22 +9,22 @@ class EyeDataset(TemplateDataset):
     #
     # =============================================================================
 
-    def __init__(self, mode, image_size=500, ci_concept=0):
-        super(EyeDataset, self).__init__()
-        self.mode = mode
-        self.image_size = image_size
+    def __init__(self, mode, channels, image_size=500, csv_filenames=["decentnet/results/tmp/masks_info_label.csv"], ci_concept=0, concepts_path="C:/Users/Prinzessin/projects/decentnet/data/tmp/concepts"):
+        super().__init__(mode, channels, image_size, csv_filenames)
+        
+        # class speficic
+        
+        print(self.csv_data)
         
         self.ci_concept = ci_concept
-
-        self.transforms = transforms.Compose(self._get_transforms())
-            
+        self.concepts_path = concepts_path  
         self.set_dataset()
          
     def __len__(self):
         return len(self.csv_data)
 
     def get_class_labels(self):
-        return list(self.csv_data["label"])
+        return list(self.csv_data["lbl"])
     
     def __getitem__(self, index):
         # =============================================================================
@@ -55,26 +55,11 @@ class EyeDataset(TemplateDataset):
         
         # To change: you can add labels here
         item = {
-            'image' : image,
-            'label' : label
+            'img' : image,
+            'lbl' : label
         } 
         
         return item
-    
-    def _get_transforms(self):
-        # =============================================================================
-        # notes:
-        #   overwritten for training set
-        #   when overwriting a transform, use own function ToTensor instead of transforms.ToTensor
-        #   dream_c{label}_{patch_id}.jpg
-        # =============================================================================
-        
-        transform_list = []
-        transform_list.append(ResizeCrop(self.image_size))
-        transform_list.append(RandomAugmentations())
-        transform_list.append(ToTensor())
-        transform_list.append(Normalise())
-        return transform_list
     
     def set_dataset(self):
         # we need a script for this
@@ -84,8 +69,8 @@ class EyeDataset(TemplateDataset):
         
         # iterate over files in concepts path directory
         # won't work since in other dirs now
-        for ci_dir in os.listdir(concepts_path):
-            this_concept_path = os.path.join(concepts_path, ci_dir)
+        for ci_dir in os.listdir(self.concepts_path):
+            this_concept_path = os.path.join(self.concepts_path, ci_dir)
             for filename in os.listdir(this_concept_path):
                 # cluster_i is 1, rest is 0
                 if filename.split("_")[1] == self.ci_concept:
@@ -98,22 +83,6 @@ class EyeDataset(TemplateDataset):
         dict = {"image_path" : image_path, "label" : label}
         self.csv_data = pd.DataFrame(dict)
         
-        if False:
-            self.csv_data = self.csv_data.sample(frac=1, random_state=19).reset_index(drop=True)
-
-            percent95 = int(len(self.csv_data)/100*95)
-            
-            if self.mode == "train":
-                # 95% of data
-                self.csv_data = self.csv_data[0:percent95]
-                print("trainset length", len(self.csv_data))
-                print("value count:", self.csv_data['label'].value_counts())
-            
-            else:
-                # 5% of data
-                self.csv_data = self.csv_data[percent95:-1]
-                print("valset length",len(self.csv_data))
-                print("value count:", self.csv_data['label'].value_counts())
 
 
 

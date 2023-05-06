@@ -16,12 +16,14 @@ from matplotlib import pyplot as plt
 class GuidedBackprop():
     # =============================================================================
     # Produces gradients generated with guided back propagation from the given image
-    # Sources:
+    # sources:
     #    https://github.com/utkuozbulak/pytorch-cnn-visualizations/blob/master/src/guided_backprop.py
     #    https://github.com/utkuozbulak/pytorch-cnn-visualizations/blob/master/src/misc_functions.py
     # =============================================================================
 
     def __init__(self, model, experiment_name="tmp"):
+        # =============================================================================
+        # =============================================================================
         
         self.experiment_name = experiment_name
         self.model = model
@@ -35,6 +37,8 @@ class GuidedBackprop():
         
 
     def run(self, input_image, target_class, cnn_layer, filter_pos, layer):
+        # =============================================================================
+        # =============================================================================
         
         #print("cnn_layer", cnn_layer)
         #print("target_class", target_class)
@@ -43,7 +47,6 @@ class GuidedBackprop():
         self.preproc_image = self.preprocess_image(input_image)
         x = self.preproc_image
 
-        
         self.model.zero_grad()
         
         # Forward pass
@@ -82,6 +85,8 @@ class GuidedBackprop():
         
 
     def save(self, results_path, file_name_to_export):
+        # =============================================================================
+        # =============================================================================
         
         if not os.path.exists(results_path):
             os.makedirs(results_path)
@@ -126,7 +131,7 @@ class GuidedBackprop():
         p = os.path.join(results_path, file_name_to_export + '_guided_bp_colour.png')
         save_image(self.grad_image, p, True)
         
-        # save grayscale image
+        # save greyscale image
         p = os.path.join(results_path, file_name_to_export + '_guided_bp_grey.png')
         save_image(self.grad_image_gray, p, True)
 
@@ -155,11 +160,11 @@ class GuidedBackprop():
         save_image(self.heatmap_img, p, False)
         
     def update_relus(self):
-        """
-            Updates relu activation functions so that
-                1- stores output in forward pass
-                2- imputes zero for gradient values that are less than zero
-        """
+        # =============================================================================
+        # Updates relu activation functions so that
+        #    1- stores output in forward pass
+        #    2- imputes zero for gradient values that are less than zero
+        # =============================================================================
         def relu_backward_hook_function(module, grad_in, grad_out):
             """
             If there is a negative gradient, change it to zero
@@ -187,7 +192,8 @@ class GuidedBackprop():
                 module.register_forward_hook(relu_forward_hook_function)
                 
     def hook_layers(self):
-        ####
+        # =============================================================================
+        # =============================================================================
         def hook_function(module, grad_in, grad_out):
             self.gradients = grad_in[0]
         # Register hook to the first layer
@@ -198,13 +204,13 @@ class GuidedBackprop():
         first_layer.register_backward_hook(hook_function)
         
     def convert_to_grayscale(self, im_as_arr):
-        """
-            Converts 3d image to grayscale
-        Args:
-            im_as_arr (numpy arr): RGB image with shape (D,W,H)
-        returns:
-            grayscale_im (numpy_arr): Grayscale image with shape (1,W,D)
-        """
+        # =============================================================================
+        # Converts 3d image to grayscale
+        # parameters:
+        #    im_as_arr (numpy arr): RGB image with shape (D,W,H)
+        # returns:
+        #    grayscale_im (numpy_arr): Grayscale image with shape (1,W,D)
+        # =============================================================================
         grayscale_im = np.sum(np.abs(im_as_arr), axis=0)
         im_max = np.percentile(grayscale_im, 99)
         im_min = np.min(grayscale_im)
@@ -214,13 +220,13 @@ class GuidedBackprop():
 
 
     def apply_colormap_on_image(self, org_im, activation, colormap_name):
-        """
-            Apply heatmap on image
-        Args:
-            org_img (PIL img): Original image
-            activation_map (numpy arr): Activation map (grayscale) 0-255
-            colormap_name (str): Name of the colormap
-        """
+        # =============================================================================
+        # Apply heatmap on image
+        # parameters:
+        #    org_img (PIL img): Original image
+        #    activation_map (numpy arr): Activation map (grayscale) 0-255
+        #    colormap_name (str): Name of the colormap
+        # =============================================================================
         # Get colormap
         color_map = mpl_color_map.get_cmap(colormap_name)
         no_trans_heatmap = color_map(activation)
@@ -238,14 +244,14 @@ class GuidedBackprop():
 
 
     def preprocess_image(self, pil_im, resize_im=True):
-        """
-            Processes image for CNNs
-        Args:
-            PIL_img (PIL_img): PIL Image or numpy array to process
-            resize_im (bool): Resize to 224 or not
-        returns:
-            im_as_var (torch variable): Variable that contains processed float tensor
-        """
+        # =============================================================================
+        # Processes image for CNNs
+        # parameters:
+        #    PIL_img (PIL_img): PIL Image or numpy array to process
+        #    resize_im (bool): Resize to 224 or not
+        # returns:
+        #    im_as_var (torch variable): Variable that contains processed float tensor
+        # =============================================================================
         # Mean and std list for channels (Imagenet)
         mean = [0.485, 0.456, 0.406]
         std = [0.229, 0.224, 0.225]
@@ -278,13 +284,13 @@ class GuidedBackprop():
 
 
     def get_positive_negative_saliency(self, gradient):
-        """
-            Generates positive and negative saliency maps based on the gradient
-        Args:
-            gradient (numpy arr): Gradient of the operation to visualize
-        returns:
-            pos_saliency, neg_saliency
-        """
+        # =============================================================================
+        # Generates positive and negative saliency maps based on the gradient
+        # parameters:
+        #    gradient (numpy arr): Gradient of the operation to visualize
+        # returns:
+        #    pos_saliency, neg_saliency
+        # =============================================================================
         pos_saliency = (np.maximum(0, gradient) / gradient.max())
         neg_saliency = (np.maximum(0, -gradient) / -gradient.min())
         return pos_saliency, neg_saliency
