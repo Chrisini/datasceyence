@@ -1,12 +1,5 @@
-from dataset.template import TemplateDataset
-from dataset.transform.transform import *
+from dataset.template import *
 
-import torch
-
-import pandas as pd
-import torchvision.transforms
-
-import numpy as np
 
 class MeanTeacherTrainDataset(TemplateDataset):
     # =============================================================================
@@ -16,7 +9,7 @@ class MeanTeacherTrainDataset(TemplateDataset):
     # =============================================================================
     
     def __init__(self, mode="train", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"]):
-        super().__init__(mode, channels, image_size, csv_filenames)
+        super().__init__(mode=mode, index_col=None, channels=channels, image_size=image_size, csv_filenames=csv_filenames)
 
     def __len__(self):
         return len(self.csv_data)
@@ -59,6 +52,8 @@ class MeanTeacherTrainDataset(TemplateDataset):
         
         dataset_type = self.csv_data.iloc[index]['dataset_type']
         
+        # has_mask = self.csv_data.iloc[index]['has_mask']
+        
         # img, lbl_whatever, msk_whatever
         item = {
             'img' : image, # img_s
@@ -66,7 +61,7 @@ class MeanTeacherTrainDataset(TemplateDataset):
             'msk' : mask,
             "weight" : weight,
             "mbs_class" : dataset_type, # mixed batch sampler, class for data imbalance handling
-            "has_mask" : has_mask
+            "has_mask" : has_mask, # duplicate with labelled
         } 
         
         if self.transforms:
@@ -114,7 +109,7 @@ class MeanTeacherValDataset(TemplateDataset):
     # =============================================================================
 
     def __init__(self, mode="val", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"]):
-        super().__init__(mode, channels, image_size, csv_filenames)
+        super().__init__(mode=mode, index_col=None, channels=channels, image_size=image_size, csv_filenames=csv_filenames)
         
          
     def __len__(self):
@@ -146,7 +141,7 @@ class MeanTeacherValDataset(TemplateDataset):
         # img, lbl_whatever, msk_whatever
         item = {
             'img' : image,
-            'msk' : mask
+            'msk' : mask,
         } 
         
         if self.transforms:

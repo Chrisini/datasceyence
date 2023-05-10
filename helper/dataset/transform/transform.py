@@ -51,22 +51,18 @@ class RandomVerticalFlip(TemplateTransform):
 
 class RandomAugmentations(TemplateTransform):
     # =============================================================================
-    # Random Augmentations that have no image transformation such as 
-    # rotate, scale, zoom, ...
+    # Random Augmentations that have no image transformation
+    # brightness, contrast, gamma, sharpness
     # (use early)
     # =============================================================================
 
     def __init__(self, p=0.5):
         TemplateTransform.__init__(self, p=p)
         self.apply_to_mask=False
-        self.colour = torchvision.transforms.ColorJitter(0.15, 0.25, 0.25, 0.25)
         
     def _change_image(self, keyword):
         image = self.item[keyword]
         
-        # colour jitter
-        image = self.colour(image) 
-
         # any non negative number. 0 gives a black image, 1 gives the original image while 2 increases the brightness by a factor of 2
         brightness_factor = random.uniform(0.5, 1.5)
         image = torchvision.transforms.functional.adjust_brightness(image, brightness_factor)

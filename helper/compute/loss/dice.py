@@ -42,19 +42,16 @@ def soft_dice_score(
 
 class DiceLoss(_Loss):
     """Dice loss for image segmentation task.
-        It supports binary, multiclass and multilabel cases
-        Args:
-            mode: Loss mode 'binary', 'multiclass' or 'multilabel'
-            classes:  List of classes that contribute in loss computation. By default, all channels are included.
+        Parameters:
             log_loss: If True, loss computed as `- log(dice_coeff)`, otherwise `1 - dice_coeff`
-            from_logits: If True, assumes input is raw logits
             smooth: Smoothness constant for dice coefficient (a)
-            ignore_index: Label that indicates ignored pixels (does not contribute to loss)
             eps: A small epsilon for numerical stability to avoid zero division error
                 (denominator will be always greater or equal to eps)
+        
+        # extreme values 0 and 1
         Shape
-             - **model_output** - torch.Tensor of shape (N, C, H, W)
-             - **ground_truth** - torch.Tensor of shape (N, H, W) or (N, C, H, W)
+             - **model_output** - torch.Tensor of shape (B, C, H, W)
+             - **ground_truth** - torch.Tensor of shape (B, H, W) or (B, C, H, W)
         Reference
             https://github.com/BloodAxe/pytorch-toolbelt
             https://github.com/qubvel/segmentation_models.pytorch
@@ -62,76 +59,55 @@ class DiceLoss(_Loss):
     
     def __init__(
         self,
-        mode: str,
-        classes: Optional[List[int]] = None,
+        n_output_neurons : int = 1,
         log_loss: bool = False,
         from_logits: bool = True,
         smooth: float = 0.0,
-        ignore_index: Optional[int] = None,
         eps: float = 1e-7,
     ):
-        assert mode in {"BINARY_MODE", "MULTILABEL_MODE", "MULTICLASS_MODE"}
         super(DiceLoss, self).__init__()
-        self.mode = mode
-        if classes is not None:
-            assert mode != "BINARY_MODE", "Masking classes is not supported with mode=binary"
-            classes = to_tensor(classes, dtype=torch.long)
 
-        self.classes = classes
-        self.from_logits = from_logits
+        self.n_output_neurons = n_output_neurons
+        self.log_loss = log_loss
         self.smooth = smooth
         self.eps = eps
-        self.log_loss = log_loss
-        self.ignore_index = ignore_index
+
 
     def forward(self, model_output: torch.Tensor, ground_truth: torch.Tensor) -> torch.Tensor:
 
         assert ground_truth.size(0) == model_output.size(0)
 
-        if self.from_logits:
-            # Apply activations to get [0..1] class probabilities
-            # Using Log-Exp as this gives more numerically stable result and does not cause vanishing gradient on
-            # extreme values 0 and 1
-            if self.mode == MULTICLASS_MODE:
-                model_output = model_output.log_softmax(dim=1).exp()
-            else:
-                model_output = torch.nn.functional.logsigmoid(model_output).exp()
 
         bs = ground_truth.size(0)
-        num_classes = model_output.size(1)
         dims = (0, 2)
 
-        if self.mode == "BINARY_MODE":
+        if self.n_output_neurons == 1: # Binary
+            
+            # Apply activations to get [0..1] class probabilities
+            # Using Log-Exp as this gives more numerically stable result and does not cause vanishing gradient on
+            model_output = torch.nn.functional.logsigmoid(model_output).exp()
+            
             ground_truth = ground_truth.view(bs, 1, -1)
             model_output = model_output.view(bs, 1, -1)
 
-            if self.ignore_index is not None:
-                mask = ground_truth != self.ignore_index
-                model_output = model_output * mask
-                ground_truth = ground_truth * mask
+            mask = ground_truth
+            model_output = model_output * mask
+            ground_truth = ground_truth * mask
 
-        if self.mode == "MULTICLASS_MODE":
+        if self.n_output_neurons > 1: # Multiclass
+            
+            # Apply activations to get [0..1] class probabilities
+            # Using Log-Exp as this gives more numerically stable result and does not cause vanishing gradient on
+            model_output = model_output.log_softmax(dim=1).exp()
+            
             ground_truth = ground_truth.view(bs, -1)
-            model_output = model_output.view(bs, num_classes, -1)
+            model_output = model_output.view(bs, self.n_output_neurons, -1)
 
-            if self.ignore_index is not None:
-                mask = ground_truth != self.ignore_index
-                model_output = model_output * mask.unsqueeze(1)
+            mask = ground_truth
+            model_output = model_output * mask.unsqueeze(1)
 
-                ground_truth = torch.nn.functional.one_hot((ground_truth * mask).to(torch.long), num_classes)  # N,H*W -> N,H*W, C
-                ground_truth = ground_truth.permute(0, 2, 1) * mask.unsqueeze(1)  # N, C, H*W
-            else:
-                ground_truth = torch.nn.functional.one_hot(ground_truth, num_classes)  # N,H*W -> N,H*W, C
-                ground_truth = ground_truth.permute(0, 2, 1)  # N, C, H*W
-
-        if self.mode == "MULTILABEL_MODE":
-            ground_truth = ground_truth.view(bs, num_classes, -1)
-            model_output = model_output.view(bs, num_classes, -1)
-
-            if self.ignore_index is not None:
-                mask = ground_truth != self.ignore_index
-                model_output = model_output * mask
-                ground_truth = ground_truth * mask
+            ground_truth = torch.nn.functional.one_hot((ground_truth * mask).to(torch.long), self.n_output_neurons)  # N,H*W -> N,H*W, C
+            ground_truth = ground_truth.permute(0, 2, 1) * mask.unsqueeze(1)  # N, C, H*W
 
         scores = self.compute_score(model_output, ground_truth.type_as(model_output), smooth=self.smooth, eps=self.eps, dims=dims)
 
@@ -147,9 +123,6 @@ class DiceLoss(_Loss):
 
         mask = ground_truth.sum(dims) > 0
         loss *= mask.to(loss.dtype)
-
-        if self.classes is not None:
-            loss = loss[self.classes]
 
         return self.aggregate_loss(loss)
 
