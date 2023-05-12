@@ -14,6 +14,24 @@ class PosNegConceptDataset(TemplateDataset):
         # class speficic        
         self.ci_concept = ci_concept
         self.concepts_path = concepts_path
+        
+        self.csv_data.drop(columns=['lbl_cluster', 'mode'])
+        
+        self.this_concept = self.csv_data.columns[ci_concept]
+        
+        print("this concept:", self.this_concept)
+        
+        self.csv_data["lbl"] = self.csv_data[self.this_concept]
+        
+        self.csv_data = self.csv_data[["lbl"]].dropna()
+        
+        self.csv_data["lbl"] = self.csv_data["lbl"] > 0.0
+        
+        # print(self.csv_data["lbl"])
+        
+        print("this concept:", self.this_concept)
+        
+        print(self.csv_data.head())
          
     def __len__(self):
         return len(self.csv_data.index)
@@ -34,19 +52,15 @@ class PosNegConceptDataset(TemplateDataset):
         
         if torch.is_tensor(index):
             index=index.tolist()
-
-        print(self.csv_data["lbl_Hemorrhages"][index])
-        print(self.csv_data.index[index])
+            
         
         path = os.path.join(*[self.concepts_path, self.csv_data.index[index].split("_")[0], "dream_c0_" + self.csv_data.index[index] + ".jpg"])
         # self.csv_data.iloc[index]['img_path']       
-        
-        print(path)
-        
+                
         image = Image.open(path)
                 
          # print(image)
-        label = self.csv_data["lbl_Hemorrhages"][index]
+        label = self.csv_data["lbl"][index]
         
         # To change: you can add labels here
         item = {
@@ -58,8 +72,7 @@ class PosNegConceptDataset(TemplateDataset):
             # apply transforms to both images
             tct = TwoCropTransform(self.transforms)
             item = tct(item)
-            
-        
+                    
         return item
     
 

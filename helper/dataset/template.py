@@ -94,7 +94,7 @@ class TemplateDataset(Dataset):
             ResizeCrop(self.image_size),
             RandomVerticalFlip(p=0.1),
             RandomHorizontalFlip(p=0.5),
-            RandomAugmentations(p=self.p_aug),
+            RandomAugmentationsSoft(p=self.p_aug),
             RandomBlur(p=0.3),
             ToTensor(),
             Normalise()

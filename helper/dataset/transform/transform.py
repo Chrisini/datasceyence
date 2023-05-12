@@ -49,6 +49,39 @@ class RandomVerticalFlip(TemplateTransform):
         self.item[keyword] = torchvision.transforms.functional.vflip(self.item[keyword])
 
 
+class RandomAugmentationsSoft(TemplateTransform):
+    # =============================================================================
+    # Random Augmentations that have no image transformation
+    # brightness, contrast, gamma, sharpness
+    # (use early)
+    # =============================================================================
+
+    def __init__(self, p=0.5):
+        TemplateTransform.__init__(self, p=p)
+        self.apply_to_mask=False
+        
+    def _change_image(self, keyword):
+        image = self.item[keyword]
+        
+        # any non negative number. 0 gives a black image, 1 gives the original image while 2 increases the brightness by a factor of 2
+        brightness_factor = random.uniform(0.8, 1.2)
+        image = torchvision.transforms.functional.adjust_brightness(image, brightness_factor)
+
+        # any non negative number. 0 gives a solid gray image, 1 gives the original image while 2 increases the contrast by a factor of 2.
+        contrast_factor = random.uniform(0.8, 1.2)
+        image = torchvision.transforms.functional.adjust_contrast(image, contrast_factor)
+
+        # gamma larger than 1 make the shadows darker, while gamma smaller than 1 make dark regions lighter
+        gamma_value = random.uniform(0.8, 1.2)
+        image = torchvision.transforms.functional.adjust_gamma(image, gamma_value)
+
+        #any non negative number. 0 gives a blurred image, 1 gives the original image while 2 increases the sharpness by a factor of 2.
+        sharpness_factor = random.uniform(0.8, 1.2)
+        image = torchvision.transforms.functional.adjust_sharpness(image, sharpness_factor)
+        
+        self.item[keyword] = image
+        
+        
 class RandomAugmentations(TemplateTransform):
     # =============================================================================
     # Random Augmentations that have no image transformation
@@ -80,7 +113,6 @@ class RandomAugmentations(TemplateTransform):
         image = torchvision.transforms.functional.adjust_sharpness(image, sharpness_factor)
         
         self.item[keyword] = image
-        
         
 class RandomBlur(TemplateTransform):
     # =============================================================================

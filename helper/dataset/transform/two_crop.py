@@ -11,7 +11,6 @@ class TwoCropTransform:
         tmp1 = {"img" : item["img"]}
         tmp2 = {"img" : item["img"]}
                 
-        item["img1"] = self.transform(tmp1)["img"]
-        item["img2"] = self.transform(tmp2)["img"]
+        item["img"] = [self.transform(tmp1)["img"], self.transform(tmp2)["img"]]
         
         return item
