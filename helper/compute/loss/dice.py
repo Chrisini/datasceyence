@@ -55,6 +55,7 @@ class DiceLoss(_Loss):
         Reference
             https://github.com/BloodAxe/pytorch-toolbelt
             https://github.com/qubvel/segmentation_models.pytorch
+            # changed a lot
         """
     
     def __init__(

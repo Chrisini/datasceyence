@@ -1,5 +1,8 @@
 from sklearn.metrics import *
+import numpy as np
+from scipy.spatial.distance import directed_hausdorff
 
+import torch
 
 class TemplateComputingUnit():
     
@@ -21,7 +24,7 @@ class TemplateComputingUnit():
         
         keys = ['name', 'mode', # stays the same - needs to be re-saved
                 'epoch',
-                'train_size','val_size', # train val size
+                'data_size', # train set size or val set size
                 'loss',
                 'acc', 
                 'fscore', 'f_micro',

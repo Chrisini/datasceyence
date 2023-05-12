@@ -1,3 +1,3 @@
-from model.decent_block import *
-from model.decent_net import *
-from model.mean_teacher import *
+from model.decentblock import *
+from model.decentnet import *
+from model.meanteacher import *

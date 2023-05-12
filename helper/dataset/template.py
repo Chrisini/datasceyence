@@ -37,8 +37,8 @@ class TemplateDataset(Dataset):
 
         self.csv_data = pd.concat(csv_list, axis=0, ignore_index=False)
         
-        print("here template")
-        print(self.csv_data)
+        #print("here template")
+        #print(self.csv_data)
                 
         self.csv_data = self.csv_data[self.csv_data["mode"].str.contains(mode)]
         

@@ -2,16 +2,19 @@
 
 Collection of my deep learning in ophthalmology projects - built as a framework
 
-Inspired by:
+Main sources:
 * [PixelSSL](https://github.com/ZHKKKe/PixelSSL) 
+* [SSL4MIS](https://github.com/HiLab-git/SSL4MIS)
 
 ## Todos
-* [] need to change transforms - has to be for every item key that contains "img" not is equal to ... (same with "msk")
+* [ ] need to change transforms - has to be for every item key that contains "img" not is equal to ... (same with "msk")
 
 
 ## Function calls
 
 Generally, class functions with prefix **"run_"** can be called. For any sort of logging or plotting, call **"log"** functions
+
+Every helper code inherits its template class
 
 The main projects I focus on here are:
 
@@ -21,19 +24,22 @@ The main projects I focus on here are:
 
 ## Explanation of modules
 
-| Component | Description |
-| --- | --- |
-| **helper** | Helper modules |
-| **helper.transform** | Data augmentation |
-| **helper.dataset** | Dataset |
-| **helper.sampler** | Sampler |
-| **helper.model** | Models |
-| **helper.model.block** | Modules of the models |
-| **helper.compute.loss** | Loss functions |
-| **helper.compute.metrics** | Metrics (fscore, jac, rec, acc, kappa, ...) |
-| **examples** | Unit tests for helper modules |
-| **configs** | Settings |
-| **data** | csv data preparation for dataloader | 
+| Component | Description | Called by | 
+| --- | --- | --- |
+| **configs** | Settings: .ini files |
+| **data_prep** | csv data preparation for dataloader | prepare_.ipybn | 
+| **examples** | Unit tests for helper modules | unittest_.ipybn | 
+| **helper** | Helper modules | - |
+| **helper.compute** | Compute Unit - for each head (seg/class/reg, bin/multi), computes loss and metrics | run_.ipybn | 
+| **helper.compute.loss** | Loss functions, called in compute |
+| **helper.compute.metrics** | Metrics (fscore, jac, rec, acc, kappa, ...) | used in compute |
+| **helper.dataset** | Dataset | run_.ipybn | 
+| **helper.dataset.transform** | Data augmentation | used by dataset |
+| **helper.model** | Models | run_.ipybn | 
+| **helper.model.block** | Modules of the models | used by model |
+| **helper.sampler** | Sampler | run_.ipybn | 
+| **helper.visualisation** | explainability, interpretability, plots | run_.ipybn | 
+
 
 ## Loss functions in **helper.compute.loss**
 | Component | Loss+Source | Type | examples.unittest_ |
@@ -49,7 +55,7 @@ The main projects I focus on here are:
 ## Models in **helper.models**
 | Component | Model+Source | Type | examples.unittest_ |
 | --- | --- | --- | --- |
-| **model.decent_block** | ready to use decent model | ? | not tested yet |
+| **model.decentblock** | ready to use decent model | ? | not tested yet |
 | **model.block.shuffle_block** | ShuffleNet+MLP, ShuffleNet+conv1x1, ShuffleNet+linear layer | encoder block(s), early | not tested yet |
 | **model.block.late_block** | late ResNet layers | encoder block(s), late | not tested yet |
 | **model.block.fusion_block** | conv1x1 | fusion between blocks or between block(s) and head(s) | not tested yet |

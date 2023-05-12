@@ -1,1 +1,1 @@
-from compute.compute_bin_seg import * 
+from compute.bin_seg import * 
