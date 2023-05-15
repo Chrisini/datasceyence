@@ -1,5 +1,10 @@
 run_vae.ipybn
 
+*.tif
+examples/example_vis/
+examples/example_data/
+examples/art/
+examples/art2/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

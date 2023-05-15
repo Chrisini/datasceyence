@@ -9,14 +9,17 @@ class SeamlessCloneTransform(TemplateTransform):
         self.p = p
         self.apply_to_mask = True
         
-        print(random.randint(0,9))
-        self.dst["img"] = None
-        self.dst["mask"] = None
-    
+
     
     def _change_image(self, keyword):
         
         src_img = self.item[keyword]
+        
+        print(random.randint(0,9))
+        
+        self.dst["img"] = None
+        self.dst["mask"] = None
+    
                 
         new_img = None
                 
@@ -29,3 +32,8 @@ class SeamlessCloneTransform(TemplateTransform):
                 if keyword in key and value is not None:
                     # copy original transform
                     self._change_image(key)
+
+                    
+class SeamlessCloneTransform(TemplateTransform):
+    def a():
+        pass

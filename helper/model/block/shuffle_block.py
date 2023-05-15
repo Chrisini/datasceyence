@@ -125,10 +125,10 @@ class DecentBlock_Shuffle_Linear(torch.nn.Module):
     # this is currently not in use
     # =============================================================================
 
-    def __init__(self, out_classes=10):
+    def __init__(self, ckpt_early_blocks_path=None, ckpt_early_blocks=None, out_classes=5, device="cpu"):
         super(DecentBlock_Shuffle_Linear, self).__init__()
         
-        self.num_classes
+        self.out_classes = out_classes
         
         # encoder
         try:
