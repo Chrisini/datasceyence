@@ -43,4 +43,4 @@ class UncertaintyMetric():
         
         entropy = -torch.sum(ema_preds * torch.log(ema_preds), dim=1, keepdim=True)
         
-        return entropy # uncertainty map
+        return entropy # uncertainy mask
