@@ -18,7 +18,7 @@ class TemplateDataset(Dataset):
     #
     # =============================================================================
 
-    def __init__(self, mode="train", index_col=None, channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"], p_aug=0.5):
+    def __init__(self, mode="train", index_col=None, channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"], p_aug=0.5, reduced_data=False):
         super(TemplateDataset, self).__init__()
         
         self.mode = mode # train/val
@@ -41,6 +41,9 @@ class TemplateDataset(Dataset):
         #print(self.csv_data)
                 
         self.csv_data = self.csv_data[self.csv_data["mode"].str.contains(mode)]
+        
+        if reduced_data:
+            self.csv_data = self.csv_data.head(10)
         
         self.transforms = torchvision.transforms.Compose(self.get_transforms())
         

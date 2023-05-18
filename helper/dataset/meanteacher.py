@@ -8,8 +8,8 @@ class MeanTeacherTrainDataset(TemplateDataset):
     #
     # =============================================================================
     
-    def __init__(self, mode="train", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"]):
-        super().__init__(mode=mode, index_col=None, channels=channels, image_size=image_size, csv_filenames=csv_filenames)
+    def __init__(self, mode="train", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"], reduced_data=False):
+        super().__init__(mode=mode, index_col=None, channels=channels, image_size=image_size, csv_filenames=csv_filenames, reduced_data=reduced_data)
 
     def __len__(self):
         return len(self.csv_data)
@@ -108,8 +108,8 @@ class MeanTeacherValDataset(TemplateDataset):
     #
     # =============================================================================
 
-    def __init__(self, mode="val", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"]):
-        super().__init__(mode=mode, index_col=None, channels=channels, image_size=image_size, csv_filenames=csv_filenames)
+    def __init__(self, mode="val", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"], reduced_data=False):
+        super().__init__(mode=mode, index_col=None, channels=channels, image_size=image_size, csv_filenames=csv_filenames, reduced_data=reduced_data)
         
          
     def __len__(self):
