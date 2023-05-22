@@ -29,6 +29,7 @@ class MeanTeacherTrainDataset(TemplateDataset):
             index=index.tolist()
 
         i_path = self.csv_data.iloc[index]['img_path']    
+                
         if self.channels == 1:
             image = Image.open(i_path).convert('L')
         else:

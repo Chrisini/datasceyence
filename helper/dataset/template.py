@@ -43,6 +43,7 @@ class TemplateDataset(Dataset):
         self.csv_data = self.csv_data[self.csv_data["mode"].str.contains(mode)]
         
         if reduced_data:
+            self.csv_data = self.csv_data.sample(frac=1).reset_index(drop=True)
             self.csv_data = self.csv_data.head(10)
         
         self.transforms = torchvision.transforms.Compose(self.get_transforms())
@@ -82,7 +83,7 @@ class TemplateDataset(Dataset):
         
         return item
     
-    def get_class_labels(self):
+    def get_mbs_labels(self):
         return list(self.csv_data["lbl"])
     
     def get_transforms(self):

@@ -101,21 +101,38 @@ class DiceLoss(_Loss):
             # Using Log-Exp as this gives more numerically stable result and does not cause vanishing gradient on
             model_output = model_output.log_softmax(dim=1).exp()
             
+            #print("1 model_output.shape", model_output.shape)
+            #print("1 ground_truth.shape", ground_truth.shape)
+            
             ground_truth = ground_truth.view(bs, -1)
             model_output = model_output.view(bs, self.n_output_neurons, -1)
+            
+            #print("2 model_output.shape", model_output.shape)
+            #print("2 ground_truth.shape", ground_truth.shape)
 
             mask = ground_truth
             model_output = model_output * mask.unsqueeze(1)
+            
+            #print("3 model_output.shape", model_output.shape)
+            #print("3 ground_truth.shape", ground_truth.shape)
 
             ground_truth = torch.nn.functional.one_hot((ground_truth * mask).to(torch.long), self.n_output_neurons)  # N,H*W -> N,H*W, C
             ground_truth = ground_truth.permute(0, 2, 1) * mask.unsqueeze(1)  # N, C, H*W
+            
+            #print("4 ground_truth.shape", ground_truth.shape)
 
         scores = self.compute_score(model_output, ground_truth.type_as(model_output), smooth=self.smooth, eps=self.eps, dims=dims)
+        
+        #print("scores", scores)
+        #print("loss 1", -torch.log(scores.clamp_min(self.eps)))
+        #print("loss 2",  1.0 - scores)
 
         if self.log_loss:
             loss = -torch.log(scores.clamp_min(self.eps))
         else:
             loss = 1.0 - scores
+            
+       
 
         # Dice loss is undefined for non-empty classes
         # So we zero contribution of channel that does not have true pixels
@@ -124,6 +141,13 @@ class DiceLoss(_Loss):
 
         mask = ground_truth.sum(dims) > 0
         loss *= mask.to(loss.dtype)
+        
+        
+        print("mask", mask)
+        
+        print("masked loss", loss)
+        
+        print("self.aggregate_loss(loss)", self.aggregate_loss(loss))
 
         return self.aggregate_loss(loss)
 

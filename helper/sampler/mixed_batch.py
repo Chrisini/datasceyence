@@ -32,11 +32,28 @@ class MixedBatchSampler(Sampler):
         # for label in unique labels
         for this_label in self.unique_labels:
             # get indices of label in original labels
-            indices_list = np.squeeze(np.where(original_labels==this_label))
-            if self.smallest_class > len(indices_list):
-                self.smallest_class = len(indices_list)
-            # save indices into dict for each unique label
-            self.label_dict[this_label] = list(indices_list)
+            
+            # print(isinstance(np.where(original_labels==this_label), list))
+            # print(isinstance(np.squeeze(np.where(original_labels==this_label), list)))
+            
+            
+            indices_list = np.squeeze(np.where(original_labels==this_label)) # 
+            
+            try:
+                # if it is a list
+                if self.smallest_class > len(indices_list):
+                    self.smallest_class = len(indices_list)
+                # save indices into dict for each unique label
+                self.label_dict[this_label] = list(indices_list)
+            except:
+                print("broken", indices_list)
+                indices_list = [indices_list]
+                print("converted to a list", indices_list)
+                if self.smallest_class > len(indices_list):
+                    self.smallest_class = len(indices_list)
+                # save indices into dict for each unique label
+                self.label_dict[this_label] = list(indices_list)
+                
             
     def __len__(self):                
         return self.smallest_class * self.unique_labels

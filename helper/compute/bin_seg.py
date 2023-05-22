@@ -8,7 +8,7 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
     # 
     # =============================================================================
     
-    def __init__(self, n_output_neurons, mode="train", bin_threshold=0.5, model="", device="cpu"):
+    def __init__(self, n_output_neurons, mode="train", bin_threshold=0.5, model="", device="cpu", writer=None):
         super().__init__(n_output_neurons=n_output_neurons, mode=mode, model=model)
                 
         # head name
@@ -17,6 +17,8 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         self.datasize = 0
         self.model = model
         self.device = device
+        
+        self.writer = writer
         
         self.bin_threshold = bin_threshold # needed if 1 output neuron
         
@@ -64,8 +66,12 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         # loss
         shape_loss = criterions["shape"](model_output=model_output, ground_truth=ground_truth)
         pixel_loss = criterions["pixel"](model_output=model_output, ground_truth=ground_truth)
+        
+        print("shape loss", shape_loss)
+        print("pixel loss", pixel_loss)
+        
         # use this for backprop
-        self.task_loss = shape_loss + pixel_loss 
+        self.task_loss = pixel_loss 
         
         # this loss should not be used for backprop
         # detach: returns a new Tensor, detached from the current graph.
@@ -112,8 +118,12 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         # save mean value to epoch_collector, reset batch_collector
         for key in self.batch_collector.keys():
             
-            self.epoch_collector[key] = round(np.mean(self.batch_collector[key]), 3) # .123
+            value = round(np.mean(self.batch_collector[key]), 3) # .123
+            self.epoch_collector[key] = value
             self.batch_collector[key] = []
+            
+            if self.writer:
+                self.writer.add_scalars("metrics/" + key, {self.model+"_"+self.mode : value}, i_epoch)
             
         if i_epoch > 5:
             if self.top_collector['lowest_loss'] < self.epoch_collector["loss"]      : self.top_collector['lowest_loss'] = self.epoch_collector["loss"]
