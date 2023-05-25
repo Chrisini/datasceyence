@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2023-05-21T10:12:08.502Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="Fa2PyZ44iceo67DBmqMi" version="21.2.8" type="device">
+<mxfile host="Electron" modified="2023-05-23T14:07:02.165Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="KmT2HP1we8zRiaj3En7n" version="21.2.8" type="device">
   <diagram name="Seite-1" id="BqQE9dgMU9yn-Ust_TR6">
-    <mxGraphModel dx="2302" dy="1364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2122" dy="768" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -81,16 +81,20 @@
         <mxCell id="UOAxCghRJmTxo2BegXRX-21" value="X" style="rounded=0;whiteSpace=wrap;html=1;fontSize=30;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;strokeWidth=3;" vertex="1" parent="1">
           <mxGeometry x="110" y="1670" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="UOAxCghRJmTxo2BegXRX-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#c71585;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-24" target="UOAxCghRJmTxo2BegXRX-83">
+        <mxCell id="UOAxCghRJmTxo2BegXRX-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;entryX=0;entryY=0.25;entryDx=0;entryDy=0;strokeColor=#c71585;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-24" target="UOAxCghRJmTxo2BegXRX-83">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="700" y="1690" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="640" y="1610" />
+              <mxPoint x="640" y="1703" />
+            </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-89" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;strokeColor=#c71585;strokeWidth=3;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-24" target="UOAxCghRJmTxo2BegXRX-85">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="640" y="1610" />
-              <mxPoint x="640" y="1467" />
+              <mxPoint x="640" y="1480" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -98,7 +102,7 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="640" y="1610" />
-              <mxPoint x="640" y="1367" />
+              <mxPoint x="640" y="1380" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -114,9 +118,9 @@
         <mxCell id="UOAxCghRJmTxo2BegXRX-29" value="Dec" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;strokeColor=#C71585;fillColor=#FDF8F7;size=40;verticalAlign=middle;labelPosition=center;verticalLabelPosition=middle;align=center;horizontal=0;direction=west;fontSize=30;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;strokeWidth=3;" vertex="1" parent="1">
           <mxGeometry x="310" y="1740" width="150" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="UOAxCghRJmTxo2BegXRX-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=3;strokeColor=#C71585;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-30" target="UOAxCghRJmTxo2BegXRX-83">
+        <mxCell id="UOAxCghRJmTxo2BegXRX-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#C71585;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-30" target="UOAxCghRJmTxo2BegXRX-83">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="699.6999999999998" y="1689.6" as="targetPoint" />
+            <mxPoint x="680" y="1730" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-30" value="T&lt;br style=&quot;font-size: 30px;&quot;&gt;Pred" style="rounded=0;whiteSpace=wrap;html=1;fontSize=30;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;strokeWidth=3;" vertex="1" parent="1">
@@ -143,11 +147,11 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-42" value="Enc" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;fillColor=#F7FEFF;strokeColor=#008080;size=40;horizontal=0;fontSize=30;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;strokeWidth=3;" vertex="1" parent="1">
-          <mxGeometry x="210" y="2060" width="150" height="100" as="geometry" />
+          <mxGeometry x="-280" y="1490" width="150" height="100" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-125" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeWidth=3;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-43" target="UOAxCghRJmTxo2BegXRX-48">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="337" y="2210" as="targetPoint" />
+            <mxPoint x="-153" y="1640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-133" value="&lt;font style=&quot;font-size: 30px;&quot;&gt;EMA&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" vertex="1" connectable="0" parent="UOAxCghRJmTxo2BegXRX-125">
@@ -156,13 +160,13 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-43" value="Dec" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;strokeColor=#C71585;fillColor=#FDF8F7;size=40;verticalAlign=middle;labelPosition=center;verticalLabelPosition=middle;align=center;horizontal=0;direction=west;fontSize=30;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;strokeWidth=3;" vertex="1" parent="1">
-          <mxGeometry x="310" y="2060" width="150" height="100" as="geometry" />
+          <mxGeometry x="-180" y="1490" width="150" height="100" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-47" value="Enc" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;fillColor=#F7FEFF;strokeColor=#008080;size=40;horizontal=0;fontSize=30;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;strokeWidth=3;" vertex="1" parent="1">
-          <mxGeometry x="210" y="2280" width="150" height="100" as="geometry" />
+          <mxGeometry x="-280" y="1710" width="150" height="100" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-48" value="Dec" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;strokeColor=#C71585;fillColor=#FDF8F7;size=40;verticalAlign=middle;labelPosition=center;verticalLabelPosition=middle;align=center;horizontal=0;direction=west;fontSize=30;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;strokeWidth=3;" vertex="1" parent="1">
-          <mxGeometry x="310" y="2280" width="150" height="100" as="geometry" />
+          <mxGeometry x="-180" y="1710" width="150" height="100" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeWidth=3;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-77" target="UOAxCghRJmTxo2BegXRX-18">
           <mxGeometry relative="1" as="geometry">
@@ -231,10 +235,10 @@
           <mxGeometry x="307" y="1850" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-130" value="&lt;font style=&quot;font-size: 30px;&quot;&gt;Student&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" vertex="1" parent="1">
-          <mxGeometry x="307" y="2020" width="60" height="30" as="geometry" />
+          <mxGeometry x="-183" y="1450" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-131" value="&lt;font style=&quot;font-size: 30px;&quot;&gt;Teacher&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;" vertex="1" parent="1">
-          <mxGeometry x="307" y="2397" width="60" height="30" as="geometry" />
+          <mxGeometry x="-183" y="1827" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-134" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=30;strokeWidth=3;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-135" target="UOAxCghRJmTxo2BegXRX-136">
           <mxGeometry relative="1" as="geometry" />
@@ -272,7 +276,7 @@
           <mxGeometry x="1980" y="1717.5" width="120" height="75" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-148" value="&lt;font style=&quot;font-size: 30px;&quot;&gt;Teacher&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;strokeWidth=3;" vertex="1" parent="1">
-          <mxGeometry x="1470" y="1815" width="60" height="30" as="geometry" />
+          <mxGeometry x="1481" y="1817" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="UOAxCghRJmTxo2BegXRX-151" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontFamily=Roboto Slab;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BSlab;fontSize=30;strokeWidth=3;" edge="1" parent="1" source="UOAxCghRJmTxo2BegXRX-150" target="UOAxCghRJmTxo2BegXRX-136">
           <mxGeometry relative="1" as="geometry" />

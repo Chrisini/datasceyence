@@ -11,10 +11,9 @@ class ShapeLoss(TemplateLoss):
     # AAAI_sdf_loss
     # https://github.com/JunMa11/SegWithDistMap/blob/master/code/train_LA_AAAISDF.py
     
-    def __init__(self, smooth=1e-5, weight=10, device="cpu"):
+    def __init__(self, smooth=1e-5, device="cpu"):
         super(ShapeLoss, self).__init__()
         self.smooth = smooth
-        self.weight = weight
         self.device = device
         
     def compute_sdf(self, img_gt, out_shape):
@@ -49,8 +48,8 @@ class ShapeLoss(TemplateLoss):
 
         return normalized_sdf
         
-    def forward(self, model_output, ground_truth):
-        
+    def forward(self, model_output, ground_truth, weight:int=1):
+        # weight of the whole loss value
         # print('model_output.shape, ground_truth.shape', model_output.shape, ground_truth.shape)
         # ([4, 1, 112, 112, 80])
         
@@ -67,4 +66,4 @@ class ShapeLoss(TemplateLoss):
         # print('L_product.shape', L_product.shape) (4,2)
         L_SDF_AAAI = - L_product + torch.norm(model_output - ground_truth, 1)/torch.numel(model_output)
 
-        return L_SDF_AAAI * self.weight
+        return L_SDF_AAAI * weight

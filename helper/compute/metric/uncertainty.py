@@ -27,6 +27,8 @@ class UncertaintyMetric():
         
         ema_preds = torch.zeros( (batch_size*self.n_noise*self.n_repeat), self.n_output_neurons, width, height )
         
+        model.eval()
+        
         for i in range (self.n_noise):
     
             noise = torch.clamp(torch.randn_like(ema_batch) * 0.1, min=-0.2, max=0.2)
