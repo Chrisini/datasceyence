@@ -134,7 +134,7 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
             if self.top_collector['highest_symhd'] > self.epoch_collector["symhd"]   : self.top_collector['highest_symhd'] = self.epoch_collector["symhd"]
             
         # log all the stuff
-        #print(self.epoch_collector)
+        print(self.epoch_collector)
         
         self.datasize = 0    
     
