@@ -57,6 +57,9 @@ class TemplateComputingUnit():
     
     def reset_epoch(self):
         
+        if self.top_collector['highest_fscore'] < self.epoch_collector["fscore"]:
+            self.top_collector["highest_fscore"] = self.epoch_collector["fscore"]
+        
         for key in self.epoch_collector.keys():
             self.epoch_collector[key] = None
             

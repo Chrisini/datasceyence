@@ -28,13 +28,13 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         self.n_output_neurons = n_output_neurons
         
         
-        b_keys = [  'loss',
+        b_keys = [  'taskloss',
                     'acc', 'fscore', 'jac', 'prec', 'rec',
                     'symhd' # task specific: segmentation
                 ]
         
         e_keys = [  'name', 'model', 'mode', 'epoch', 'datasize',
-                    'loss',
+                    'taskloss',
                     'acc', 'fscore', 'jac', 'prec', 'rec',
                     'symhd', # task specific: segmentation
                 ]
@@ -46,19 +46,21 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         # everything we want to write to the csv file
         self.epoch_collector = { key : None for key in e_keys }
         
-        self.top_collector = {  'lowest_loss' : 0, 
-                                'highest_fscore' : np.inf, 
-                                'highest_jac' : np.inf, 
-                                'highest_symhd' : np.inf # high or low good??
+        
+        
+        self.top_collector = {  #'lowest_loss' : np.inf,  # low good
+                                'highest_fscore' : 0, # high good
+                                #'highest_jac' : 0, # high good
+                                #'highest_symhd' : np.inf # low good
                              }
         
         self.symhd = SymmetricHausdorffMetric()
         self.segmet = SegmentationMetrics()
+        
+        self.counter = 0
 
          
     def run_batch(self, configs, criterions, model_output, ground_truth):
-        
-        
         
         # data size
         self.datasize += len(ground_truth)
@@ -69,15 +71,20 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         self.shape_loss = criterions["shape"](model_output=model_output, ground_truth=ground_truth)
         self.pixel_loss = criterions["pixel"](model_output=model_output, ground_truth=ground_truth)
         
+        
+        
         #print("shape loss", self.shape_loss)
         #print("pixel loss", self.pixel_loss)
         
-        # use this for backprop
-        self.task_loss = self.pixel_loss # + other + weighted
+        if self.counter < 40:
+            self.task_loss = self.pixel_loss
+        else:
+            # use this for backprop
+            self.task_loss = self.pixel_loss #  + self.shape_loss
         
         # this loss should not be used for backprop
         # detach: returns a new Tensor, detached from the current graph.
-        self.batch_collector["loss"].append(self.task_loss.detach().cpu().numpy())
+        self.batch_collector["taskloss"].append(self.task_loss.detach().cpu().numpy())
         
         
         # Find the general (symmetric) Hausdorff distance - use original model output!
@@ -108,6 +115,8 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
     
     def run_epoch(self, i_epoch):
         
+        self.counter = i_epoch
+        
         #print("epoch", i_epoch)
         
         self.epoch_collector["name"] = self.name
@@ -127,16 +136,10 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
             if self.writer:
                 self.writer.add_scalars("metrics/" + key, {self.model+"_"+self.mode : value}, i_epoch)
             
-        if i_epoch > 5:
-            if self.top_collector['lowest_loss'] < self.epoch_collector["loss"]      : self.top_collector['lowest_loss'] = self.epoch_collector["loss"]
-            if self.top_collector['highest_fscore'] > self.epoch_collector["fscore"] : self.top_collector['highest_fscore'] = self.epoch_collector["fscore"] 
-            if self.top_collector['highest_jac'] > self.epoch_collector["jac"]       : self.top_collector['highest_jac'] = self.epoch_collector["jac"]
-            if self.top_collector['highest_symhd'] > self.epoch_collector["symhd"]   : self.top_collector['highest_symhd'] = self.epoch_collector["symhd"]
-            
         # log all the stuff
         print(self.epoch_collector)
         
-        self.datasize = 0    
+        self.datasize = 0
     
 
     
