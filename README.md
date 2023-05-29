@@ -1,6 +1,8 @@
 # DatascEYEnce
 
-Collection of my deep learning in ophthalmology projects - built as a framework
+Collection of my deep learning in ophthalmology projects - built as a framework.
+
+Covering theory here: https://variint.github.io/datasceyence
 
 Main sources:
 * [PixelSSL](https://github.com/ZHKKKe/PixelSSL) 
