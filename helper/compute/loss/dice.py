@@ -5,9 +5,10 @@ import torch.nn
 
 class DiceLoss(torch.nn.Module):
     # Source: https://github.com/HiLab-git/SSL4MIS/blob/master/code/utils/losses.py
-    def __init__(self, n_output_neurons):
+    def __init__(self, n_output_neurons, softmax=False):
         super(DiceLoss, self).__init__()
         self.n_output_neurons = n_output_neurons
+        self.softmax=softmax
 
     def _one_hot_encoder(self, input_tensor):
         tensor_list = []
@@ -27,8 +28,8 @@ class DiceLoss(torch.nn.Module):
         loss = 1 - loss
         return loss
 
-    def forward(self, model_output, ground_truth, weight=None, softmax=False):
-        if softmax:
+    def forward(self, model_output, ground_truth, weight=None):
+        if self.softmax:
             model_output = torch.softmax(model_output, dim=1)
         ground_truth = self._one_hot_encoder(ground_truth)
         
