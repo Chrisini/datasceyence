@@ -5,7 +5,9 @@ examples/example_vis/
 examples/example_data/
 examples/art/
 examples/art2/
-examples/munit/
+examples/munit/datasets/
+examples/munit/results/
+examples/munit/visuals/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
