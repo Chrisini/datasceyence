@@ -44,7 +44,7 @@ class TemplateDataset(Dataset):
         
         if reduced_data:
             self.csv_data = self.csv_data.sample(frac=1).reset_index(drop=True)
-            self.csv_data = self.csv_data.head(20)
+            self.csv_data = self.csv_data.head(200)
         
         self.transforms = torchvision.transforms.Compose(self.get_transforms())
         
