@@ -238,7 +238,12 @@ def load_vgg16(model_dir):
         #for (src, dst) in zip(vgglua.parameters()[0], vgg.parameters()):
         #    dst.data[:] = src
         #torch.save(vgg.state_dict(), os.path.join(model_dir, 'vgg16.weight'))
-    vgg = Vgg16()
+    try:
+        vgg = torch.nn.DataParallel( Vgg16() )
+    except Exception as e:
+        print(e)
+        print("parallel not possible")
+        vgg = Vgg16()
     #vgg.load_state_dict(torch.load(os.path.join(model_dir, 'vgg16.weight')))
     return vgg
 
@@ -253,7 +258,7 @@ def load_inception(model_path):
         param.requires_grad = False
     return model
 
-def vgg_preprocess(batch, device="cpu"):
+def vgg_preprocess(batch, device="cuda"):
     tensortype = type(batch.data)
     (r, g, b) = torch.chunk(batch, 3, dim = 1)
     batch = torch.cat((b, g, r), dim = 1) # convert RGB to BGR

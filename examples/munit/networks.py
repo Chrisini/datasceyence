@@ -103,11 +103,28 @@ class AdaINGen(nn.Module):
         mlp_dim = params['mlp_dim']
 
         # style encoder
-        self.enc_style = StyleEncoder(4, input_dim, dim, style_dim, norm='none', activ=activ, pad_type=pad_type)
+        try:
+            self.enc_style =  StyleEncoder(4, input_dim, dim, style_dim, norm='none', activ=activ, pad_type=pad_type) 
+        except Exception as e:
+            print(e)
+            print("parallel not possible for style encoder")
+            self.enc_style = StyleEncoder(4, input_dim, dim, style_dim, norm='none', activ=activ, pad_type=pad_type)
 
         # content encoder
-        self.enc_content = ContentEncoder(n_downsample, n_res, input_dim, dim, 'in', activ, pad_type=pad_type)
-        self.dec = Decoder(n_downsample, n_res, self.enc_content.output_dim, input_dim, res_norm='adain', activ=activ, pad_type=pad_type)
+        try:
+            self.enc_content =  ContentEncoder(n_downsample, n_res, input_dim, dim, 'in', activ, pad_type=pad_type) 
+        except Exception as e:
+            print(e)
+            print("parallel not possible fpr content encoder")
+            self.enc_content = ContentEncoder(n_downsample, n_res, input_dim, dim, 'in', activ, pad_type=pad_type)
+            
+        # decoder   
+        try:
+            self.dec =  Decoder(n_downsample, n_res, self.enc_content.output_dim, input_dim, res_norm='adain', activ=activ, pad_type=pad_type) 
+        except Exception as e:
+            print(e)
+            print("parallel not possible for decoder")
+            self.dec = Decoder(n_downsample, n_res, self.enc_content.output_dim, input_dim, res_norm='adain', activ=activ, pad_type=pad_type)
 
         # MLP to generate AdaIN parameters
         self.mlp = MLP(style_dim, self.get_num_adain_params(self.dec), mlp_dim, 3, norm='none', activ=activ)
