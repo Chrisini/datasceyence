@@ -157,6 +157,9 @@ class ResizeCrop(TemplateTransform):
 
 class MaskCrop(TemplateTransform):
     
+    def __init__(self, image_size=512):
+        TemplateTransform.__init__(self, image_size=image_size)
+    
     def __call__(self, item):
         self.item = item
         if item["mask_crop"]: # only apply if mask crop is true
@@ -188,18 +191,52 @@ class MaskCrop(TemplateTransform):
             # cv2.drawContours(msk,[max_area],0,255,-1)
             # print(max_area)
 
-        # calculate moments of binary image
-        M = cv2.moments(max_area)
-        # calculate x, y coordinate of center
-        cX = int(M["m10"] / M["m00"])
-        cY = int(M["m01"] / M["m00"])
+            # calculate moments of binary image
+            M = cv2.moments(max_area)
+            # calculate x, y coordinate of center
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
 
-        # crop
-        img = img[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
-        msk = msk[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
+            try:
+                # crop
+                tmp_img = img[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
+                tmp_msk = msk[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
+                tmp_img = cv2.resize(tmp_img, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA)
+                tmp_msk = cv2.resize(tmp_msk, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA) 
+            except:
 
-        self.item["img"] = img
-        self.item["msk"] = msk
+                import matplotlib.pyplot as plt
+                plt.figure()
+                plt.imshow(self.item["msk"])
+                plt.figure()
+                plt.imshow(self.item["img"])
+                plt.figure()
+                plt.imshow(img)
+
+
+                crop_number = 300
+                tmp_img = img[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
+                tmp_msk = msk[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
+                tmp_img = cv2.resize(img, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA)
+                tmp_msk = cv2.resize(msk, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA) 
+
+                import matplotlib.pyplot as plt
+                plt.figure()
+                plt.imshow(self.item["msk"])
+                plt.figure()
+                plt.imshow(self.item["img"])
+                plt.figure()
+                plt.imshow(img)
+        
+        else:
+            print("no label available, transform file")
+            
+            tmp_img = img
+            tmp_msk = msk
+            
+
+        self.item["img"] = tmp_img
+        self.item["msk"] = tmp_msk
         
         return self.item
         
