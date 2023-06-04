@@ -8,8 +8,10 @@ class MeanTeacherTrainDataset(TemplateDataset):
     #
     # =============================================================================
     
-    def __init__(self, mode="train", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"], reduced_data=False):
+    def __init__(self, mode="train", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"], reduced_data=False, i2itype=None):
         super().__init__(mode=mode, index_col=None, channels=channels, image_size=image_size, csv_filenames=csv_filenames, reduced_data=reduced_data)
+        
+        self.i2itype = i2itype
 
     def __len__(self):
         return len(self.csv_data)
@@ -31,16 +33,19 @@ class MeanTeacherTrainDataset(TemplateDataset):
         i_path = self.csv_data.iloc[index]['img_path']    
                 
         if self.channels == 1:
-            image = Image.open(i_path).convert('L')
+            # image = Image.open(i_path).convert('L')
+            image = skimage.io.imread(i_path, as_gray=True)
         else:
-            image = Image.open(i_path).convert('RGB')
-           
+            # image = Image.open(i_path).convert('RGB')
+            image = skimage.io.imread(i_path, as_gray=False)
+                       
         if 'msk_path' in self.csv_data.iloc[index].keys():
             if self.csv_data.iloc[index]['msk_path'] is not np.nan:
                 m_path = self.csv_data.iloc[index]['msk_path']
                 #print(i_path)
                 #print(m_path)
-                mask = Image.open(m_path).convert('L')
+                # mask = Image.open(m_path).convert('L')
+                mask = skimage.io.imread(i_path, as_gray=True)
                 has_mask = True
             else: 
                 mask = None
@@ -50,19 +55,19 @@ class MeanTeacherTrainDataset(TemplateDataset):
             has_mask = False
                 
         weight = self.csv_data.iloc[index]['weight']
-        
         dataset_type = self.csv_data.iloc[index]['dataset_type']
+        should_crop = self.csv_data.iloc[index]['should_crop']
         
         # has_mask = self.csv_data.iloc[index]['has_mask']
         
         # img, lbl_whatever, msk_whatever
         item = {
-            'img' : image, # img_s
-            # 'img_t' : image,
+            'img' : image,
             'msk' : mask,
             "weight" : weight,
             "mbs_class" : dataset_type, # mixed batch sampler, class for data imbalance handling
             "has_mask" : has_mask, # duplicate with labelled
+            "should_crop" : should_crop # for fundus images, crop around the mask
         } 
         
         if self.transforms:
@@ -89,7 +94,19 @@ class MeanTeacherTrainDataset(TemplateDataset):
         #   dream_c{label}_{patch_id}.jpg
         # =============================================================================
         
+        paths = self.csv_data.loc[df['mask_path'] == None]["img_path"]
+        i_path = random.choice(paths)
+        if self.channels == 1:
+            # image = Image.open(i_path).convert('L')
+            tgt_img = skimage.io.imread(i_path, as_gray=True)
+        else:
+            # image = Image.open(i_path).convert('RGB')
+            tgt_img = skimage.io.imread(i_path, as_gray=False)
+        
         transform_list = [
+            MaskCrop(),
+            FourierDomainAdapTransform(self.i2itype, tgt_img),
+            ToPillow(),
             ResizeCrop(self.image_size),
             RandomVerticalFlip(p=0.1),
             RandomHorizontalFlip(p=0.5),
@@ -161,6 +178,7 @@ class MeanTeacherValDataset(TemplateDataset):
         # =============================================================================
         
         transform_list = [
+            ToPillow(),
             ResizeCrop(self.image_size),
             ToTensor(),
             Normalise()
@@ -269,6 +287,7 @@ class MeanTeacherCirDataset(TemplateDataset):
         # =============================================================================
         
         transform_list = [
+            ToPillow(),
             ResizeCrop(self.image_size),
             ToTensor(),
             Normalise()

@@ -7,6 +7,10 @@ from PIL import Image, ImageDraw, ImageChops
 
 import random
 
+import cv2
+
+import numpy as np
+
 class RandomHorizontalFlip(TemplateTransform):
     # =============================================================================
     # Random Horizontal Flip (use early)
@@ -149,6 +153,56 @@ class ResizeCrop(TemplateTransform):
         self.item[keyword] = self.resize(self.item[keyword])
         # crop to get a square
         self.item[keyword] = self.centercrop(self.item[keyword])
+        
+
+class MaskCrop(TemplateTransform):
+    
+    def __call__(self, item):
+        self.item = item
+        if item["mask_crop"]: # only apply if mask crop is true
+            self._change_image_and_mask()
+        return self.item
+    
+    def _change_image_and_mask(self, crop_number=700):
+        
+        img = self.item["img"]
+        msk = self.item["msk"]
+        
+        if len(img.shape) == 2:
+            gray = img.mean(axis=0).mean(axis=0) 
+            img = cv2.copyMakeBorder(img, 400, 400, 400, 400, cv2.BORDER_CONSTANT, None, value = gray)
+            img[np.where((img==0))] = gray
+        else:
+            gray = img.mean(axis=0).mean(axis=0)
+            # image, recolour black part
+            img = cv2.copyMakeBorder(img, 400, 400, 400, 400, cv2.BORDER_CONSTANT, None, value = gray)
+            img[np.where((img==[0,0,0]).all(axis=2))] = gray
+
+        # get center point of RoI
+        msk = cv2.copyMakeBorder(msk, 400, 400, 400, 400, cv2.BORDER_REPLICATE)
+        if len(msk.shape) != 2:
+            msk = cv2.cvtColor(msk, cv2.COLOR_BGR2GRAY)
+        num_labels, labels_im = cv2.findContours(msk, cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)    
+        if len(num_labels) > 0:
+            max_area = max(num_labels, key = cv2.contourArea)
+            # cv2.drawContours(msk,[max_area],0,255,-1)
+            # print(max_area)
+
+        # calculate moments of binary image
+        M = cv2.moments(max_area)
+        # calculate x, y coordinate of center
+        cX = int(M["m10"] / M["m00"])
+        cY = int(M["m01"] / M["m00"])
+
+        # crop
+        img = img[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
+        msk = msk[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
+
+        self.item["img"] = img
+        self.item["msk"] = msk
+        
+        return self.item
+        
 
 class CircleMask(TemplateTransform):
     # =============================================================================
@@ -184,6 +238,19 @@ class ToTensor(TemplateTransform):
     
     def _change_image(self, keyword):
         self.item[keyword] = torchvision.transforms.functional.to_tensor(self.item[keyword])        
+        
+class ToPillow(TemplateTransform):
+    # =============================================================================
+    # ToTensor class (use last)
+    # Creates a tensor from an image
+    # =============================================================================
+    
+    def __init__(self):
+        TemplateTransform.__init__(self)
+        self.apply_to_mask=True
+    
+    def _change_image(self, keyword):
+        self.item[keyword] = torchvision.transforms.functional.to_pil_image(self.item[keyword])        
 
 class RandomErasing(TemplateTransform):
     # =============================================================================
