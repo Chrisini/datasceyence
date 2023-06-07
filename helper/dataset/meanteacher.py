@@ -94,7 +94,7 @@ class MeanTeacherTrainDataset(TemplateDataset):
         #   dream_c{label}_{patch_id}.jpg
         # =============================================================================
         
-        paths = self.csv_data.loc[df['mask_path'] == None]["img_path"]
+        paths = self.csv_data.loc[self.csv_data['mask_path'] == None]["img_path"]
         i_path = random.choice(paths)
         if self.channels == 1:
             # image = Image.open(i_path).convert('L')
