@@ -1,3 +1,4 @@
 medmnist
 segmentation-models-pytorch
 fda
+imagecodecs
