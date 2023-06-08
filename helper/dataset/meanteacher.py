@@ -105,8 +105,7 @@ class MeanTeacherTrainDataset(TemplateDataset):
         #   when overwriting a transform, use own function ToTensor instead of transforms.ToTensor
         #   dream_c{label}_{patch_id}.jpg
         # =============================================================================
-<<<<<<< HEAD
-        
+        """
         paths = self.csv_data.loc[self.csv_data['mask_path'] == None]["img_path"]
         i_path = random.choice(paths)
         if self.channels == 1:
@@ -115,10 +114,9 @@ class MeanTeacherTrainDataset(TemplateDataset):
         else:
             # image = Image.open(i_path).convert('RGB')
             tgt_img = skimage.io.imread(i_path, as_gray=False)
-=======
-  
+          
+        """
         tgt_paths = self.csv_data.loc[self.csv_data['msk_path'].isna()]["img_path"]
->>>>>>> 8696146e6b52984583f9cd5bff52a7b31d7a829a
         
         transform_list = [
             MaskCrop(image_size=self.image_size),
