@@ -1,4 +1,5 @@
 run_vae.ipybn
+main_pipeline.ipynb
 
 *.tif
 examples/example_vis/
