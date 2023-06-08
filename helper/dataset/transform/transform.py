@@ -205,13 +205,14 @@ class MaskCrop(TemplateTransform):
                 tmp_msk = cv2.resize(tmp_msk, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA) 
             except:
 
-                import matplotlib.pyplot as plt
-                plt.figure()
-                plt.imshow(self.item["msk"])
-                plt.figure()
-                plt.imshow(self.item["img"])
-                plt.figure()
-                plt.imshow(img)
+                if False:
+                    import matplotlib.pyplot as plt
+                    plt.figure()
+                    plt.imshow(self.item["msk"])
+                    plt.figure()
+                    plt.imshow(self.item["img"])
+                    plt.figure()
+                    plt.imshow(img)
 
 
                 crop_number = 300
@@ -219,15 +220,16 @@ class MaskCrop(TemplateTransform):
                 tmp_msk = msk[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
                 tmp_img = cv2.resize(img, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA)
                 tmp_msk = cv2.resize(msk, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA) 
+                
+                if False:
+                    import matplotlib.pyplot as plt
+                    plt.figure()
+                    plt.imshow(self.item["msk"])
+                    plt.figure()
+                    plt.imshow(self.item["img"])
+                    plt.figure()
+                    plt.imshow(img)
 
-                import matplotlib.pyplot as plt
-                plt.figure()
-                plt.imshow(self.item["msk"])
-                plt.figure()
-                plt.imshow(self.item["img"])
-                plt.figure()
-                plt.imshow(img)
-        
         else:
             print("no label available, transform file")
             

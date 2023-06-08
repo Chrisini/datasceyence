@@ -41,8 +41,8 @@ class MeanTeacherTrainDataset(TemplateDataset):
                 image = skimage.io.imread(i_path, as_gray=True)
                 image = skimage.util.img_as_ubyte(image, force_copy=False)
                 
-            print(image.shape)
-            print(image.dtype)
+            #print(image.shape)
+            #print(image.dtype)
                 
         else:
             # image = Image.open(i_path).convert('RGB')
