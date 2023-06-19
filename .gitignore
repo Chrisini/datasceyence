@@ -4,6 +4,7 @@ main_pipeline.ipynb
 *.tif
 examples/example_vis/
 examples/example_data/
+examples/example_results/
 examples/art/
 examples/art2/
 examples/munit/datasets/

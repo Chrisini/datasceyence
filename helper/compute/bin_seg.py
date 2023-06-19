@@ -68,9 +68,10 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         ground_truth = ground_truth.to(self.device)
         
         # loss
-        self.shape_loss = criterions["shape"](model_output=model_output, ground_truth=ground_truth)
-        self.pixel_loss = criterions["pixel"](model_output=model_output, ground_truth=ground_truth)
+        self.shape_loss = torch.tensor(0).to(self.device) # criterions["shape"](model_output=model_output, ground_truth=ground_truth)
+        self.pixel_loss = criterions["pixel"](model_output=model_output, ground_truth=ground_truth) # input, target
         
+        # self.pixel_loss = criterions["pixel"](model_output, ground_truth.squeeze(dim=1).long())
         
         
         #print("shape loss", self.shape_loss)

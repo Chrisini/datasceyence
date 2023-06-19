@@ -40,9 +40,11 @@ class FourierDomainAdapTransform(TemplateTransform):
         self.channels = channels
         self.image_size = image_size
         
+        print("self.tgt_paths", self.tgt_paths)
+        
     def _get_random_tgt_img(self):
         
-        i_path = random.choice(self.tgt_paths)
+        i_path = random.choice(list(self.tgt_paths))
 
         if self.channels == 1:
             # image = Image.open(i_path).convert('L')
