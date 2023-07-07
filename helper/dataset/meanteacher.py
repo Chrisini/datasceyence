@@ -5,7 +5,6 @@ import skimage.util
 class MeanTeacherTrainDataset(TemplateDataset):
     # =============================================================================
     #
-    # val needs different transforms!!!! todo
     #
     # =============================================================================
     
@@ -101,23 +100,12 @@ class MeanTeacherTrainDataset(TemplateDataset):
     def get_transforms(self):
         # =============================================================================
         # notes:
-        #   overwritten for training set
-        #   when overwriting a transform, use own function ToTensor instead of transforms.ToTensor
-        #   dream_c{label}_{patch_id}.jpg
         # =============================================================================
-        """
-        paths = self.csv_data.loc[self.csv_data['mask_path'] == None]["img_path"]
-        i_path = random.choice(paths)
-        if self.channels == 1:
-            # image = Image.open(i_path).convert('L')
-            tgt_img = skimage.io.imread(i_path, as_gray=True)
-        else:
-            # image = Image.open(i_path).convert('RGB')
-            tgt_img = skimage.io.imread(i_path, as_gray=False)
-          
-        """
+
+        # for image to image translation
         tgt_paths = self.csv_data.loc[self.csv_data['msk_path'].isna()]["img_path"]
         
+        # training transforms
         transform_list = [
             MaskCrop(image_size=self.image_size),
             FourierDomainAdapTransform(tgt_paths=tgt_paths, channels=self.channels, image_size=self.image_size),
@@ -137,8 +125,6 @@ class MeanTeacherTrainDataset(TemplateDataset):
 class MeanTeacherValDataset(TemplateDataset):
     # =============================================================================
     #
-    # val needs different transforms!!!! todo
-    #
     # =============================================================================
 
     def __init__(self, mode="val", channels=1, image_size=500, csv_filenames=["data_ichallenge_amd.csv", "data_ichallenge_non_amd.csv"], reduced_data=False):
@@ -155,7 +141,7 @@ class MeanTeacherValDataset(TemplateDataset):
         # returns:
         #   dictionary "item" with:
         #       image (transformed)
-        #       label
+        #       mask label
         # notes:
         # =============================================================================
         
@@ -187,9 +173,6 @@ class MeanTeacherValDataset(TemplateDataset):
     def get_transforms(self):
         # =============================================================================
         # notes:
-        #   overwritten for training set
-        #   when overwriting a transform, use own function ToTensor instead of transforms.ToTensor
-        #   dream_c{label}_{patch_id}.jpg
         # =============================================================================
         
         transform_list = [
@@ -203,9 +186,7 @@ class MeanTeacherValDataset(TemplateDataset):
     
 class MeanTeacherCirDataset(TemplateDataset):
     # =============================================================================
-    #
-    # val needs different transforms!!!! todo
-    #
+    # Cirrus data, testset
     # =============================================================================
 
     def __init__(self, channels=1, image_size=500, csv_filenames=["datasceyence-master2/data_prep/mt_data_cirrus.csv"], reduced_data=False):
@@ -236,7 +217,7 @@ class MeanTeacherCirDataset(TemplateDataset):
         # returns:
         #   dictionary "item" with:
         #       image (transformed)
-        #       label
+        #       mask label
         # notes:
         # =============================================================================
         
@@ -273,11 +254,7 @@ class MeanTeacherCirDataset(TemplateDataset):
         # img, lbl_whatever, msk_whatever
         item = {
             'img' : image, # img_s
-            # 'img_t' : image,
             'msk' : mask,
-            "weight" : weight,
-            "mbs_class" : dataset_type, # mixed batch sampler, class for data imbalance handling
-            "has_mask" : has_mask, # duplicate with labelled
         } 
         
         if self.transforms:
@@ -289,15 +266,9 @@ class MeanTeacherCirDataset(TemplateDataset):
         
         return item
     
-    
-
-    
     def get_transforms(self):
         # =============================================================================
         # notes:
-        #   overwritten for training set
-        #   when overwriting a transform, use own function ToTensor instead of transforms.ToTensor
-        #   dream_c{label}_{patch_id}.jpg
         # =============================================================================
         
         transform_list = [

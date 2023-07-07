@@ -71,7 +71,7 @@ class TemplateComputingUnit():
     def log(self, csv_file_path):
         # =============================================================================
         # Write all information to a csv file (loss, accuracy, precision, recall, fscore, jaccard)
-        # arguments:
+        # parameters:
         #    csv_file_path
         # returns:
         #    none

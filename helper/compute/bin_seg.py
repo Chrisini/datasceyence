@@ -3,12 +3,12 @@ from compute.metric.symmetric_hausdorff import *
 from compute.metric.segmentation import *
 
 class BCE_BinSeg_CU(TemplateComputingUnit):
-    
     # =============================================================================
-    # 
+    # Binary segmentation computing unit
+    # loss and metric calculation for each batch and each epoch
     # =============================================================================
     
-    def __init__(self, n_output_neurons, mode="train", bin_threshold=0.5, model="", device="cpu", writer=None):
+    def __init__(self, n_output_neurons, mode="train", bin_threshold=0.5, model="", device="cpu", writer=None, configs=None):
         super().__init__(n_output_neurons=n_output_neurons, mode=mode, model=model)
                 
         # head name
@@ -19,6 +19,7 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         self.device = device
         
         self.writer = writer
+        self.configs = configs
         
         self.bin_threshold = bin_threshold # needed if 1 output neuron
         
@@ -39,15 +40,14 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
                     'symhd', # task specific: segmentation
                 ]
         
-        # everything we want to track
+        # everything we want to track for each epoch
         self.batch_collector = { key : [] for key in b_keys }
 
         
         # everything we want to write to the csv file
         self.epoch_collector = { key : None for key in e_keys }
         
-        
-        
+
         self.top_collector = {  #'lowest_loss' : np.inf,  # low good
                                 'highest_fscore' : 0, # high good
                                 #'highest_jac' : 0, # high good
@@ -60,7 +60,18 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         self.counter = 0
 
          
-    def run_batch(self, configs, criterions, model_output, ground_truth):
+    def run_batch(self, criterions, model_output, ground_truth):
+        # =============================================================================
+        # Calculates loss for each batch, calculates metrics for each batch
+        # parameters:
+        #    criterions: dictionary with different loss functions
+        #    model_output: prediction masks
+        #    ground_truth: manual masks
+        # returns:
+        #    none
+        # saves:
+        #    batch collector: save loss and metrics, for each batch within the epoch
+        # =============================================================================           
         
         # data size
         self.datasize += len(ground_truth)
@@ -71,11 +82,11 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         self.shape_loss = criterions["shape"](model_output=model_output, ground_truth=ground_truth)
         self.pixel_loss = criterions["pixel"](model_output=model_output, ground_truth=ground_truth)
         
-        
-        
         #print("shape loss", self.shape_loss)
         #print("pixel loss", self.pixel_loss)
         
+        # different loss functions for different epochs
+        # should be a hyperparamter
         if self.counter < 40:
             self.task_loss = self.pixel_loss
         else:
@@ -114,10 +125,19 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         
     
     def run_epoch(self, i_epoch):
+        # =============================================================================
+        # Calculates mean of loss and metrics for the whole epoch
+        # parameters:
+        #    i_epoch: epoch counter from main routine
+        # returns:
+        #    none
+        # saves:
+        #    epoch_collector: 
+        # writes:
+        #    writer: metrics+loss to tensorboard summary writer    
+        # =============================================================================           
         
         self.counter = i_epoch
-        
-        #print("epoch", i_epoch)
         
         self.epoch_collector["name"] = self.name
         self.epoch_collector["mode"] = self.mode
@@ -139,6 +159,7 @@ class BCE_BinSeg_CU(TemplateComputingUnit):
         # log all the stuff
         print(self.epoch_collector)
         
+        # reset data size
         self.datasize = 0
     
 
