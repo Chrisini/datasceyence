@@ -83,6 +83,9 @@ class RandomAugmentationsSoft(TemplateTransform):
         sharpness_factor = random.uniform(0.8, 1.2)
         image = torchvision.transforms.functional.adjust_sharpness(image, sharpness_factor)
         
+        if random.random() < 1: # in 20 percent of the cases
+            image = torchvision.transforms.functional.invert(image)
+        
         self.item[keyword] = image
         
         
@@ -100,23 +103,27 @@ class RandomAugmentations(TemplateTransform):
     def _change_image(self, keyword):
         image = self.item[keyword]
         
-        # any non negative number. 0 gives a black image, 1 gives the original image while 2 increases the brightness by a factor of 2
-        brightness_factor = random.uniform(0.5, 1.5)
-        image = torchvision.transforms.functional.adjust_brightness(image, brightness_factor)
+        if self.item["has_mask"]:
+            # any non negative number. 0 gives a black image, 1 gives the original image while 2 increases the brightness by a factor of 2
+            brightness_factor = random.uniform(0.5, 1.5)
+            image = torchvision.transforms.functional.adjust_brightness(image, brightness_factor)
 
-        # any non negative number. 0 gives a solid gray image, 1 gives the original image while 2 increases the contrast by a factor of 2.
-        contrast_factor = random.uniform(0.5, 1.5)
-        image = torchvision.transforms.functional.adjust_contrast(image, contrast_factor)
+            # any non negative number. 0 gives a solid gray image, 1 gives the original image while 2 increases the contrast by a factor of 2.
+            contrast_factor = random.uniform(0.5, 1.5)
+            image = torchvision.transforms.functional.adjust_contrast(image, contrast_factor)
 
-        # gamma larger than 1 make the shadows darker, while gamma smaller than 1 make dark regions lighter
-        gamma_value = random.uniform(0.5, 1.5)
-        image = torchvision.transforms.functional.adjust_gamma(image, gamma_value)
+            # gamma larger than 1 make the shadows darker, while gamma smaller than 1 make dark regions lighter
+            gamma_value = random.uniform(0.5, 1.5)
+            image = torchvision.transforms.functional.adjust_gamma(image, gamma_value)
 
-        #any non negative number. 0 gives a blurred image, 1 gives the original image while 2 increases the sharpness by a factor of 2.
-        sharpness_factor = random.uniform(0.5, 1.5)
-        image = torchvision.transforms.functional.adjust_sharpness(image, sharpness_factor)
-        
-        self.item[keyword] = image
+            #any non negative number. 0 gives a blurred image, 1 gives the original image while 2 increases the sharpness by a factor of 2.
+            sharpness_factor = random.uniform(0.5, 1.5)
+            image = torchvision.transforms.functional.adjust_sharpness(image, sharpness_factor)
+
+            if random.random() < 1: # in 20 percent of the cases
+                image = torchvision.transforms.functional.invert(image)
+
+            self.item[keyword] = image
         
 class RandomBlur(TemplateTransform):
     # =============================================================================
@@ -132,7 +139,8 @@ class RandomBlur(TemplateTransform):
         self.gauss = torchvision.transforms.GaussianBlur(kernel_size=(5, 5), sigma=(0.1, 5))
         
     def _change_image(self, keyword):
-        self.item[keyword] = self.gauss(self.item[keyword])
+        if self.item["has_mask"]:
+            self.item[keyword] = self.gauss(self.item[keyword])
 
         
 class ResizeCrop(TemplateTransform):
@@ -162,7 +170,7 @@ class MaskCrop(TemplateTransform):
     
     def __call__(self, item):
         self.item = item
-        if item["mask_crop"]: # only apply if mask crop is true
+        if self.item["mask_crop"]: # only apply if mask crop is true
             self._change_image_and_mask()
         return self.item
     
@@ -171,18 +179,23 @@ class MaskCrop(TemplateTransform):
         img = self.item["img"]
         msk = self.item["msk"]
         
+        center_tmp = int(img.shape[1]/2)
+        crop_tmp = 200
+        
         if len(img.shape) == 2:
-            gray = img.mean(axis=0).mean(axis=0) 
-            img = cv2.copyMakeBorder(img, 400, 400, 400, 400, cv2.BORDER_CONSTANT, None, value = gray)
+            gray = int(np.mean(img[center_tmp-crop_tmp:center_tmp+crop_tmp, center_tmp-crop_tmp:center_tmp+crop_tmp])) # img.mean(axis=0).mean(axis=0) 
+            img = cv2.copyMakeBorder(img, 700, 700, 700, 700, cv2.BORDER_CONSTANT, None, value = gray)
             img[np.where((img==0))] = gray
         else:
             gray = img.mean(axis=0).mean(axis=0)
             # image, recolour black part
-            img = cv2.copyMakeBorder(img, 400, 400, 400, 400, cv2.BORDER_CONSTANT, None, value = gray)
+            img = cv2.copyMakeBorder(img, 700, 700, 700, 700, cv2.BORDER_CONSTANT, None, value = gray)
             img[np.where((img==[0,0,0]).all(axis=2))] = gray
+            
+        # print("gray",gray)
 
         # get center point of RoI
-        msk = cv2.copyMakeBorder(msk, 400, 400, 400, 400, cv2.BORDER_REPLICATE)
+        msk = cv2.copyMakeBorder(msk, 700, 700, 700, 700, cv2.BORDER_REPLICATE)
         if len(msk.shape) != 2:
             msk = cv2.cvtColor(msk, cv2.COLOR_BGR2GRAY)
         num_labels, labels_im = cv2.findContours(msk, cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)    
@@ -203,31 +216,13 @@ class MaskCrop(TemplateTransform):
                 tmp_msk = msk[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
                 tmp_img = cv2.resize(tmp_img, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA)
                 tmp_msk = cv2.resize(tmp_msk, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA) 
+                
+                self.item["img"] = tmp_img
+                self.item["msk"] = tmp_msk
+                
             except:
+                pass
 
-                import matplotlib.pyplot as plt
-                plt.figure()
-                plt.imshow(self.item["msk"])
-                plt.figure()
-                plt.imshow(self.item["img"])
-                plt.figure()
-                plt.imshow(img)
-
-
-                crop_number = 300
-                tmp_img = img[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
-                tmp_msk = msk[cY-crop_number:cY+crop_number, cX-crop_number:cX+crop_number]
-                tmp_img = cv2.resize(img, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA)
-                tmp_msk = cv2.resize(msk, (self.image_size, self.image_size), interpolation = cv2.INTER_AREA) 
-
-                import matplotlib.pyplot as plt
-                plt.figure()
-                plt.imshow(self.item["msk"])
-                plt.figure()
-                plt.imshow(self.item["img"])
-                plt.figure()
-                plt.imshow(img)
-        
         else:
             print("no label available, transform file")
             
@@ -235,8 +230,8 @@ class MaskCrop(TemplateTransform):
             tmp_msk = msk
             
 
-        self.item["img"] = tmp_img
-        self.item["msk"] = tmp_msk
+        
+
         
         return self.item
         

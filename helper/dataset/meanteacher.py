@@ -40,8 +40,8 @@ class MeanTeacherTrainDataset(TemplateDataset):
                 image = skimage.io.imread(i_path, as_gray=True)
                 image = skimage.util.img_as_ubyte(image, force_copy=False)
                 
-            print(image.shape)
-            print(image.dtype)
+            #print(image.shape)
+            #print(image.dtype)
                 
         else:
             # image = Image.open(i_path).convert('RGB')
@@ -150,17 +150,19 @@ class MeanTeacherValDataset(TemplateDataset):
 
         i_path = self.csv_data.iloc[index]['img_path']    
         if self.channels == 1:
-            image = Image.open(i_path).convert('L')
+            image = skimage.io.imread(i_path, as_gray=True, plugin='tifffile')
         else:
             image = Image.open(i_path).convert('RGB')
            
         m_path = self.csv_data.iloc[index]['msk_path']
-        mask = Image.open(m_path).convert('L')
+        mask = skimage.io.imread(m_path, as_gray=True)
+        has_mask = True
   
         # img, lbl_whatever, msk_whatever
         item = {
             'img' : image,
             'msk' : mask,
+            'has_mask' : has_mask
         } 
         
         if self.transforms:
@@ -174,8 +176,13 @@ class MeanTeacherValDataset(TemplateDataset):
         # =============================================================================
         # notes:
         # =============================================================================
+        filename = r'C:/Users/Christina/Documents/datasceyence/data_prep/mt_data_cirrus.csv'
+        self.tgt_csv = pd.read_csv(filename, delimiter=";", index_col=None)        
+        tgt_paths = self.tgt_csv.loc[self.tgt_csv['msk_path'].isna()]["img_path"] # gotta fix this
         
         transform_list = [
+            FourierDomainAdapTransform(tgt_paths=tgt_paths, channels=self.channels, image_size=self.image_size),
+            ToPillow(),
             ResizeCrop(self.image_size),
             ToTensor(),
             Normalise()
@@ -189,7 +196,7 @@ class MeanTeacherCirDataset(TemplateDataset):
     # Cirrus data, testset
     # =============================================================================
 
-    def __init__(self, channels=1, image_size=500, csv_filenames=["datasceyence-master2/data_prep/mt_data_cirrus.csv"], reduced_data=False):
+    def __init__(self, channels=1, image_size=500, csv_filenames=["datasceyence-master2/data_prep/test_data_cirrus.csv"], reduced_data=False):
         
         self.image_size = image_size
                 
