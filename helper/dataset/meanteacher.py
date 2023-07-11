@@ -176,7 +176,7 @@ class MeanTeacherValDataset(TemplateDataset):
         # =============================================================================
         # notes:
         # =============================================================================
-        filename = r'C:/Users/Christina/Documents/datasceyence/data_prep/mt_data_cirrus.csv'
+        filename = r'datasceyence/data_prep/mt_data_cirrus.csv'
         self.tgt_csv = pd.read_csv(filename, delimiter=";", index_col=None)        
         tgt_paths = self.tgt_csv.loc[self.tgt_csv['msk_path'].isna()]["img_path"] # gotta fix this
         

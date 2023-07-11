@@ -11,6 +11,7 @@ examples/munit/datasets/
 examples/munit/results/
 examples/munit/visuals/
 main_pipeline/
+gouda/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
