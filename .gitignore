@@ -1,5 +1,6 @@
 run_vae.ipybn
 main_pipeline.ipynb
+main_pi*
 
 *.tif
 examples/example_vis/
@@ -10,6 +11,7 @@ examples/art2/
 examples/munit/datasets/
 examples/munit/results/
 examples/munit/visuals/
+data_prep/*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

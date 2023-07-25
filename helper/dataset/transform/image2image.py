@@ -40,7 +40,7 @@ class FourierDomainAdapTransform(TemplateTransform):
         self.channels = channels
         self.image_size = image_size
         
-        print("self.tgt_paths", self.tgt_paths)
+        # print("transform: self.tgt_paths", self.tgt_paths)
         
     def _get_random_tgt_img(self):
         
