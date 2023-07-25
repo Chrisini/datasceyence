@@ -101,7 +101,7 @@ class MeanTeacherTrainDataset(TemplateDataset):
         # =============================================================================
         # notes:
         # =============================================================================
-<<<<<<< HEAD
+
         """
         paths = self.csv_data.loc[self.csv_data['mask_path'] == None]["img_path"]
         img_path = random.choice(paths)
@@ -113,10 +113,9 @@ class MeanTeacherTrainDataset(TemplateDataset):
             tgt_img = skimage.io.imread(img_path, as_gray=False)
           
         """
-=======
+
 
         # for image to image translation
->>>>>>> 7811c285c824d69aee90b7f63858f28838783e74
         tgt_paths = self.csv_data.loc[self.csv_data['msk_path'].isna()]["img_path"]
         
         # training transforms
@@ -280,12 +279,8 @@ class MeanTeacherCirDataset(TemplateDataset):
         
         # img, lbl_whatever, msk_whatever
         item = {
-<<<<<<< HEAD
             'img_path' : img_path,
             'img' : image,
-=======
-            'img' : image, # img_s
->>>>>>> 7811c285c824d69aee90b7f63858f28838783e74
             'msk' : mask,
         } 
         
