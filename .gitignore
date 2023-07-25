@@ -11,7 +11,12 @@ examples/art2/
 examples/munit/datasets/
 examples/munit/results/
 examples/munit/visuals/
+<<<<<<< HEAD
 data_prep/*.csv
+=======
+main_pipeline/
+gouda/
+>>>>>>> 7811c285c824d69aee90b7f63858f28838783e74
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

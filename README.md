@@ -112,6 +112,8 @@ Guide on how to write/change the data script
 #    parameter2: e.g. ground truth of shape [bsz].
 # returns:
 #    parameter2: e.g. a loss scalar.
+# saves:
+#    collector of data within a class 
 # writes:
 #    csv file, png images, ...
 # notes:
