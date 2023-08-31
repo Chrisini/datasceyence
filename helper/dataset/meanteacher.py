@@ -30,30 +30,30 @@ class MeanTeacherTrainDataset(TemplateDataset):
         if torch.is_tensor(index):
             index=index.tolist()
 
-        i_path = self.csv_data.iloc[index]['img_path']    
+        img_path = self.csv_data.iloc[index]['img_path']    
                 
         if self.channels == 1:
-            # image = Image.open(i_path).convert('L')
-            if ".tif" in i_path:
-                image = skimage.io.imread(i_path, as_gray=True, plugin='tifffile')
+            # image = Image.open(img_path).convert('L')
+            if ".tif" in img_path:
+                image = skimage.io.imread(img_path, as_gray=True, plugin='tifffile')
             else:
-                image = skimage.io.imread(i_path, as_gray=True)
+                image = skimage.io.imread(img_path, as_gray=True)
                 image = skimage.util.img_as_ubyte(image, force_copy=False)
                 
             #print(image.shape)
             #print(image.dtype)
                 
         else:
-            # image = Image.open(i_path).convert('RGB')
-            if ".tif" in i_path:
-                image = skimage.io.imread(i_path, as_gray=False, plugin='tifffile')
+            # image = Image.open(img_path).convert('RGB')
+            if ".tif" in img_path:
+                image = skimage.io.imread(img_path, as_gray=False, plugin='tifffile')
             else:
-                image = skimage.io.imread(i_path, as_gray=False)
+                image = skimage.io.imread(img_path, as_gray=False)
                        
         if 'msk_path' in self.csv_data.iloc[index].keys():
             if self.csv_data.iloc[index]['msk_path'] is not np.nan:
                 m_path = self.csv_data.iloc[index]['msk_path']
-                #print(i_path)
+                #print(img_path)
                 #print(m_path)
                 # mask = Image.open(m_path).convert('L')
                 mask = skimage.io.imread(m_path, as_gray=True)
@@ -102,6 +102,19 @@ class MeanTeacherTrainDataset(TemplateDataset):
         # notes:
         # =============================================================================
 
+        """
+        paths = self.csv_data.loc[self.csv_data['mask_path'] == None]["img_path"]
+        img_path = random.choice(paths)
+        if self.channels == 1:
+            # image = Image.open(img_path).convert('L')
+            tgt_img = skimage.io.imread(img_path, as_gray=True)
+        else:
+            # image = Image.open(img_path).convert('RGB')
+            tgt_img = skimage.io.imread(img_path, as_gray=False)
+          
+        """
+
+
         # for image to image translation
         tgt_paths = self.csv_data.loc[self.csv_data['msk_path'].isna()]["img_path"]
         
@@ -148,11 +161,11 @@ class MeanTeacherValDataset(TemplateDataset):
         if torch.is_tensor(index):
             index=index.tolist()
 
-        i_path = self.csv_data.iloc[index]['img_path']    
+        img_path = self.csv_data.iloc[index]['img_path']    
         if self.channels == 1:
-            image = skimage.io.imread(i_path, as_gray=True, plugin='tifffile')
+            image = skimage.io.imread(img_path, as_gray=True, plugin='tifffile')
         else:
-            image = Image.open(i_path).convert('RGB')
+            image = Image.open(img_path).convert('RGB')
            
         m_path = self.csv_data.iloc[index]['msk_path']
         mask = skimage.io.imread(m_path, as_gray=True)
@@ -231,20 +244,26 @@ class MeanTeacherCirDataset(TemplateDataset):
         if torch.is_tensor(index):
             index=index.tolist()
 
-        i_path = self.csv_data.iloc[index]['img_path']    
+        img_path = self.csv_data.iloc[index]['img_path']    
                 
         if self.channels == 1:
-            image = Image.open(i_path).convert('L')
+            image = Image.open(img_path).convert('L')
         else:
-            image = Image.open(i_path).convert('RGB')
+            image = Image.open(img_path).convert('RGB')
            
         if 'msk_path' in self.csv_data.iloc[index].keys():
             if self.csv_data.iloc[index]['msk_path'] is not np.nan:
+                # for some reason it is suddenly np float nan ??
                 m_path = self.csv_data.iloc[index]['msk_path']
-                #print(i_path)
+                #print(img_path)
                 #print(m_path)
-                mask = Image.open(m_path).convert('L')
-                has_mask = True
+                
+                try:
+                    mask = Image.open(m_path).convert('L')
+                    has_mask = True
+                except:
+                    mask = None
+                    has_mask = False
             else: 
                 mask = None
                 has_mask = False
@@ -260,7 +279,8 @@ class MeanTeacherCirDataset(TemplateDataset):
         
         # img, lbl_whatever, msk_whatever
         item = {
-            'img' : image, # img_s
+            'img_path' : img_path,
+            'img' : image,
             'msk' : mask,
         } 
         
