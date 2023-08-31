@@ -16,6 +16,7 @@ data_prep/*.csv
 
 main_pipeline/
 gouda/
+results/
 
 
 # Byte-compiled / optimized / DLL files
