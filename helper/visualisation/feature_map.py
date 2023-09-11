@@ -43,8 +43,12 @@ class FeatureMap():
         # =============================================================================
         
         self.img_tensor = img_tensor
-
-        self.img_tensor = self.img_tensor.to(self.device).unsqueeze_(0)
+        
+        
+        self.img_tensor = self.img_tensor.to(self.device)
+        if len(self.img_tensor) == 3:
+            self.img_tensor = self.img_tensor.unsqueeze_(0)
+            
         hook = Hook(self.layer)
         output = self.model(img_tensor)
         self.feature_maps = hook.output.squeeze()
@@ -56,16 +60,34 @@ class FeatureMap():
         fig, axarr = plt.subplots(4, 4)
         plt.figure(figsize=(100,100))
         amount = self.feature_maps.shape[0]
-        random_samples = random.sample(range(0, amount), 16)
-        counter = 0      
+        print("amount of feature maps:", amount)
+        if amount < 16:
+            sample_amount = amount
+        else:
+            sample_amount = 16
+        random_samples = random.sample(range(0, amount), sample_amount)
+        counter = 0  
+        idx,idx2 = [0, 0]
         for idx in range(0, 4):
             for idx2 in range(0, 4):
                 axarr[idx, idx2].axis('off')
-                axarr[idx, idx2].imshow(self.feature_maps[random_samples[counter]].cpu().detach().numpy())
-                counter += 1
+                try:
+                    axarr[idx, idx2].imshow(self.feature_maps[random_samples[counter]].cpu().detach().numpy())
+                    counter += 1
+                except:
+                    pass
                 
-        # overwrite first image with original image        
-        axarr[0,0].imshow(self.img_tensor.squeeze().cpu().detach().numpy().transpose(1, 2, 0))
+        # overwrite first image with original image
+        try:
+            axarr[idx,idx2].imshow(self.img_tensor.cpu().detach().numpy().transpose(1, 2, 0))
+        except:
+            try:
+                axarr[idx,idx2].imshow(self.img_tensor.squeeze().cpu().detach().numpy().transpose(1, 2, 0))
+            except:
+                try: 
+                    axarr[idx,idx2].imshow(self.img_tensor.squeeze(1).cpu().detach().numpy().transpose(1, 2, 0))
+                except:
+                    print("not possible to show original image")
 
         plt.close()
     
