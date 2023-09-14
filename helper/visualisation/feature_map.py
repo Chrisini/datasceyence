@@ -53,12 +53,12 @@ class FeatureMap():
         output = self.model(img_tensor)
         self.feature_maps = hook.output.squeeze()
 
-    def plot(self):
+    def plot(self, path=None):
         # =============================================================================
         # plot 15 random feature maps + original image
         # =============================================================================
         fig, axarr = plt.subplots(4, 4)
-        plt.figure(figsize=(100,100))
+        # plt.figure(figsize=(100,100))
         amount = self.feature_maps.shape[0]
         print("amount of feature maps:", amount)
         if amount < 16:
@@ -88,8 +88,14 @@ class FeatureMap():
                     axarr[idx,idx2].imshow(self.img_tensor.squeeze(1).cpu().detach().numpy().transpose(1, 2, 0))
                 except:
                     print("not possible to show original image")
+        
+        if path is not None:
+            fig.savefig(path)
+        else:
+            plt.show()
+        
 
-        plt.close()
+
     
 
     
