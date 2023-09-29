@@ -11,6 +11,7 @@ examples/art2/
 examples/munit/datasets/
 examples/munit/results/
 examples/munit/visuals/
+examples/gauda_domain/
 
 data_prep/*.csv
 
