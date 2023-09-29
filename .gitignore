@@ -11,7 +11,11 @@ examples/art2/
 examples/munit/datasets/
 examples/munit/results/
 examples/munit/visuals/
+<<<<<<< HEAD
 examples/gauda_domain/
+=======
+examples/miml
+>>>>>>> c6c08093f5a816d6959f82e03f46738776b2745c
 
 data_prep/*.csv
 
