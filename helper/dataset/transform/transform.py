@@ -163,6 +163,22 @@ class ResizeCrop(TemplateTransform):
         self.item[keyword] = self.centercrop(self.item[keyword])
         
 
+class TileCrop(TemplateTransform):
+    # =============================================================================
+    # Resize and Crop (v1, use middle)
+    # Crop tiles
+    # =============================================================================
+
+    def __init__(self, tile_size=224, zoom_factor=1, n_tiles=5):
+        TemplateTransform.__init__(self)
+        
+        self.fivecrop = torchvision.transforms.FiveCrop(size=tile_size)
+
+    def _change_image(self, keyword):
+        # five crop
+        self.item[keyword] = self.fivecrop(self.item[keyword])[1]
+        
+
 class MaskCrop(TemplateTransform):
     
     def __init__(self, image_size=512):
