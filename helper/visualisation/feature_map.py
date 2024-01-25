@@ -1,107 +1,153 @@
-from visualisation.hook import Hook
-
 import matplotlib.pyplot as plt
 import numpy as np
-
-import torch
-
 from PIL import Image
-
 import random
-
+import torch
+import os
 
 class FeatureMap():
     # =============================================================================
-    # ??? https://towardsdatascience.com/how-to-visualize-convolutional-features-in-40-lines-of-code-70b7d87b0030
-    # ??? https://towardsdatascience.com/convolutional-neural-network-feature-map-and-filter-visualization-f75012a5a49c
+    # unit test: 
+    #    examples/utest_vis_feature_map.ipynb
+    # sources:
+    #    https://towardsdatascience.com/how-to-visualize-convolutional-features-in-40-lines-of-code-70b7d87b0030
+    #    https://towardsdatascience.com/convolutional-neural-network-feature-map-and-filter-visualization-f75012a5a49c
+    #    https://discuss.pytorch.org/t/how-can-l-load-my-best-model-as-a-feature-extractor-evaluator/17254/4
     # =============================================================================
 
-    def __init__(self, model, layer, device="cpu", ckpt_net_path=None, iterations=200, lr=1):
+    def __init__(self, model, layer, layer_str, log_dir, device="cpu"):
         # =============================================================================
-        # Initialise iter, lr, model, layer
+        # Set model and layer
         # =============================================================================
 
-        # settings for dreams
-        self.iterations=iterations
-        self.lr=lr
         self.device = device
+        self.log_dir = log_dir
 
         # model
-        if ckpt_net_path is not None:
-            model.load_state_dict(torch.load(ckpt_net_path)["model"]) # 'dir/decentnet_epoch_19_0.3627.ckpt'
-        self.model = model.eval()
+        self.model = model.to(device).eval()
         
         # the (conv) layer to be visualised
         self.layer = layer
-        print("Layer:", self.layer)
+        self.layer_str = layer_str
+        
+        #print("")
+        #print("Layer:", self.layer)
+        #print("")
 
-    def run(self, img_tensor):
+    def run(self, img_tensor, batch_idx):
         # =============================================================================
         # Feature map visualisation using hooks       
         # A high activation means a certain feature was found. 
         # A feature map is called the activations of a layer after the convolutional operation.
         # =============================================================================
         
-        self.img_tensor = img_tensor
-        
-        
-        self.img_tensor = self.img_tensor.to(self.device)
-        if len(self.img_tensor) == 3:
-            self.img_tensor = self.img_tensor.unsqueeze_(0)
+        #print("i", img_tensor.data.shape)
+        self.ii = img_tensor.data
+        self.batch_idx = batch_idx
             
-        hook = Hook(self.layer)
-        output = self.model(img_tensor)
-        self.feature_maps = hook.output.squeeze()
+        # hook = Hook(module=self.layer)
+        
+        active = {}
+        def get_active(name):
+            def hook(model, input, output): # hi
+                active[name] = output.data.detach()
+            return hook
 
-    def plot(self, path=None):
+
+        model = self.model.eval()
+        self.layer.register_forward_hook(get_active(self.layer_str))
+        
+        try:
+            output = self.model(img_tensor, mode='explain')
+        except:
+            output = self.model(img_tensor)
+        
+        
+        self.feature_maps = active[self.layer_str]
+
+        print('self.feature_maps', self.feature_maps.data.shape)
+        
+        '''
+        output = self.model(img_tensor, mode='explain')
+        self.feature_maps = hook.output.data # .squeeze()
+        
+        print('o', output.shape)
+        print('i', self.ii.shape)
+        print('h', hook.output)
+        print('f', self.feature_maps.shape)
+        '''
+
+    def log(self):
         # =============================================================================
-        # plot 15 random feature maps + original image
+        # plot and save 15 random feature maps + original image
         # =============================================================================
-        fig, axarr = plt.subplots(4, 4)
+        
         # plt.figure(figsize=(100,100))
-        amount = self.feature_maps.shape[0]
+        amount = self.feature_maps.shape[1]
         print("amount of feature maps:", amount)
-        if amount < 16:
+        if amount < 9:
             sample_amount = amount
+            y_axis = 3
+            x_axis = 3
+            # if x_axis == 1: x_axis = 2
+        elif amount < 16:
+            sample_amount = amount
+            y_axis = 4
+            x_axis = 4
         else:
             sample_amount = 16
-        random_samples = random.sample(range(0, amount), sample_amount)
+            x_axis = 4
+            y_axis = 4
+        
+        fig, axarr = plt.subplots(x_axis, y_axis)
+            
+        # currently not random
+        random_samples = range(0, amount) # random.sample(range(0, amount), sample_amount)
+        print("random_samples", random_samples)
         counter = 0  
-        idx,idx2 = [0, 0]
-        for idx in range(0, 4):
-            for idx2 in range(0, 4):
+        idx, idx2 = [0, 0]
+        for idx in range(0, x_axis):
+
+            for idx2 in range(0, y_axis):
+                
                 axarr[idx, idx2].axis('off')
                 try:
-                    axarr[idx, idx2].imshow(self.feature_maps[random_samples[counter]].cpu().detach().numpy())
+                    #print(self.feature_maps.squeeze().shape)
+                    #print("try 1")
+                    axarr[idx, idx2].imshow(self.feature_maps.squeeze()[random_samples[counter]].cpu().detach().numpy())
                     counter += 1
+                    
                 except:
-                    pass
-                
+                    try:
+                        #print("try 2")
+                        axarr[idx, idx2].imshow(self.feature_maps.cpu().detach().numpy())
+                        counter += 1
+                    except:
+                        try:
+                            #print("try 3")
+                            axarr[idx, idx2].imshow( (self.feature_maps.squeeze()[random_samples[counter]]).cpu().detach().numpy().transpose(1, 2, 0))
+                        except Exception as e:
+                            #print("not possible to show feature maps image")
+                            #print(self.feature_maps.shape)
+                            #print(e)
+                            axarr[idx, idx2].axis('off')
+
+            
+
         # overwrite first image with original image
         try:
-            axarr[idx,idx2].imshow(self.img_tensor.cpu().detach().numpy().transpose(1, 2, 0))
+            axarr[x_axis-1, y_axis-1].imshow(self.ii.cpu().detach().numpy().transpose(1, 2, 0))
         except:
             try:
-                axarr[idx,idx2].imshow(self.img_tensor.squeeze().cpu().detach().numpy().transpose(1, 2, 0))
+                axarr[x_axis-1, y_axis-1].imshow(self.ii.squeeze().cpu().detach().numpy().transpose(1, 2, 0))
             except:
                 try: 
-                    axarr[idx,idx2].imshow(self.img_tensor.squeeze(1).cpu().detach().numpy().transpose(1, 2, 0))
-                except:
+                    axarr[x_axis-1, y_axis-1].imshow(self.ii.squeeze(1).cpu().detach().numpy().transpose(1, 2, 0))
+                except Exception as e:
                     print("not possible to show original image")
+                    print(e)
         
-        if path is not None:
+        if self.log_dir is not None:
+            tmp = self.layer_str.replace("model", "").replace(".","")
+            path = os.path.join( self.log_dir, f"plt_id{self.batch_idx}_{tmp}.png" )
             fig.savefig(path)
-        else:
-            plt.show()
-        
-
-
-    
-
-    
-    
-    
-    
-    
-    
-

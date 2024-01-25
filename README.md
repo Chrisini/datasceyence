@@ -13,22 +13,22 @@ Covering theory here: https://variint.github.io/datasceyence
 * [ ] need to change transforms - has to be for every item key that contains "img" not is equal to ... (same with "msk")
 
 
-## Function calls
+## Conventions
 
-Generally, class functions with prefix **"run_"** can be called. For any sort of logging or plotting, call **"log"** functions
-
-Every helper code inherits its template class
+* class functions with prefix **"run_"** can be called
+* logging or plotting, call **"log"** functions
+* every helper code inherits its template class **"template.py"**
 
 
 ## Code structure 
 
 ### Main files
 
-| Component | Description |  | 
+| Component | Description | Framework | 
 | --- | --- | --- |
-| **run_bimt** | just testing a baseline: Brain-inspired modular training: https://github.com/KindXiaoming/BIMT/blob/main/mnist_3.5.ipynb |  | 
-| **run_decentnet** | currently working on a modular convnet |  | 
-| **run_meanteacher** | my master thesis - unsupervised domain adaptation and semi-supervised learning |  | 
+| **run_bimt** | just testing a baseline: Brain-inspired modular training: https://github.com/KindXiaoming/BIMT/blob/main/mnist_3.5.ipynb | Pytorch | 
+| **run_decentnet** | currently working on a modular convnet | Pytorch Lightning | 
+| **run_meanteacher** | my master thesis - unsupervised domain adaptation and semi-supervised learning | Pytorch | 
 
 
 ### Explanation of dirs
@@ -123,6 +123,8 @@ Guide on how to write/change the data script
 #    collector of data within a class 
 # writes:
 #    csv file, png images, ...
+# unit test:
+#    ipynb file path
 # notes:
 #    Whatever comes into your mind
 # sources:
