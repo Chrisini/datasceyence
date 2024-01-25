@@ -2,9 +2,10 @@
 
 Collection of my deep learning in ophthalmology projects - built as a framework.
 
+## Theory
 Covering theory here: https://variint.github.io/datasceyence
 
-Main sources:
+## Main sources:
 * [PixelSSL](https://github.com/ZHKKKe/PixelSSL) 
 * [SSL4MIS](https://github.com/HiLab-git/SSL4MIS)
 
@@ -18,7 +19,10 @@ Generally, class functions with prefix **"run_"** can be called. For any sort of
 
 Every helper code inherits its template class
 
-## Main files
+
+## Code structure 
+
+### Main files
 
 | Component | Description |  | 
 | --- | --- | --- |
@@ -27,10 +31,10 @@ Every helper code inherits its template class
 | **run_meanteacher** | my master thesis - unsupervised domain adaptation and semi-supervised learning |  | 
 
 
-## Explanation of dirs
+### Explanation of dirs
 
 | Component | Description | Called by | Notes |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | **configs** | Settings: .ini files | | (currently not in use) |
 | **data_prep** | csv data preparation for dataloader | prepare_.ipybn | 
 | **examples** | Unit tests for helper modules and general code testing | utest_.ipybn | 
@@ -46,7 +50,7 @@ Every helper code inherits its template class
 | **helper.visualisation** | explainability, interpretability, plots | run_.ipybn | 
 
 
-## Loss functions in **helper.compute.loss**
+### Loss functions in **helper.compute.loss**
 | Component | Loss+Source | Type | examples.utest_ |
 | --- | --- | --- | --- |
 | **loss.corn** | [Conditional Ordinal Regression for NN](https://github.com/Raschka-research-group/coral-pytorch) | ordinal regression | utest_loss_ordered_class |
@@ -57,7 +61,7 @@ Every helper code inherits its template class
 | **loss.iou** | [IoU Loss/Jaccard](https://github.com/qubvel/segmentation_models.pytorch/blob/master/segmentation_models_pytorch/losses/jaccard.py) | iou | utest_loss_seg |
 | **loss.supcon** | [Supervised Contrastive Loss](https://github.com/HobbitLong/SupContrast/blob/master/losses.py) | representation learning | not tested yet |
 
-## Models in **helper.models**
+### Models in **helper.models**
 | Component | Model+Source | Type | examples.utest_ |
 | --- | --- | --- | --- |
 | **model.decentblock** | ready to use decent model | ? | not tested yet |
@@ -67,13 +71,13 @@ Every helper code inherits its template class
 | **model.block.head_block** | linear layer or seg head | head(s) | not tested yet |
 | **model.block.noise_block** | Gaussian Noise layer | ? | not tested yet |
 
-## Data samplers in in **helper.sampler**
+### Data samplers in in **helper.sampler**
 | Component | Sampler+Source | Type | examples.utest_ |
 | --- | --- | --- | --- |
 | **sampler.mixed_batch** | Mixed Batch Sampling | equally sampled images for each class in a batch | utest_sampler_mixed_batch |
 
 
-## Explainability, Interpretability and Visualisation in **helper.visualisation**
+### Explainability, Interpretability and Visualisation in **helper.visualisation**
 | Component | Method+Source | Type | examples.utest_ |
 | --- | --- | --- | --- |
 | **visualisation.deepdream**| [DeepDream](https://github.com/juanigp/Pytorch-Deep-Dream/blob/master/Deep_Dream.ipynb) | layer ?? | utest_vis_deepdream |
