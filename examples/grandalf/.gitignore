@@ -1,0 +1,12 @@
+*.pyc
+*.swp
+build/
+dist/
+doc/_build
+*.egg-info
+tests/samples/priv/
+tags
+tests/.cache
+.pytest_cache/
+tests/.pytest_cache/
+.eggs/
