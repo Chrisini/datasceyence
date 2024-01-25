@@ -18,19 +18,22 @@ Generally, class functions with prefix **"run_"** can be called. For any sort of
 
 Every helper code inherits its template class
 
-The main projects I focus on here are:
+## Main files
 
-1. DecentNet - an approach to achieve disentanglement in early layers of the model.
-2. MeanTeacher - code for domain adaptation.
-3. MultiTask - a model with multiple heads, hence able to learn multiple task simultaneously.
-
-## Explanation of modules
-
-| Component | Description | Called by | 
+| Component | Description |  | 
 | --- | --- | --- |
-| **configs** | Settings: .ini files |
+| **run_bimt** | just testing a baseline: Brain-inspired modular training: https://github.com/KindXiaoming/BIMT/blob/main/mnist_3.5.ipynb |  | 
+| **run_decentnet** | currently working on a modular convnet |  | 
+| **run_meanteacher** | my master thesis - unsupervised domain adaptation and semi-supervised learning |  | 
+
+
+## Explanation of dirs
+
+| Component | Description | Called by | Notes |
+| --- | --- | --- |
+| **configs** | Settings: .ini files | | (currently not in use) |
 | **data_prep** | csv data preparation for dataloader | prepare_.ipybn | 
-| **examples** | Unit tests for helper modules | utest_.ipybn | 
+| **examples** | Unit tests for helper modules and general code testing | utest_.ipybn | 
 | **helper** | Helper modules | - |
 | **helper.compute** | Compute Unit - for each head (seg/class/reg, bin/multi), computes loss and metrics | run_.ipybn | 
 | **helper.compute.loss** | Loss functions, called in compute |
