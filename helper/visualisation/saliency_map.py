@@ -1,14 +1,18 @@
-def visualise_attention(self, eye, configs, iteration, image_id):
+# =============================================================================
+# i don't know whether this works
+# =============================================================================
+def visualise_saliency(self, eye, configs, iteration, image_id):
     # =============================================================================
     # not sure it learns with backprop
     # not good in "per head", since I have a output=eye_model(image) here
     # targets are wrong
     # Attention map using gradients
     # neeeds grad, don't use "with torch.no_grad():" before
-    # https://towardsdatascience.com/saliency-map-using-pytorch-68270fe45e80
-    # https://medium.datadriveninvestor.com/visualizing-neural-networks-using-saliency-maps-in-pytorch-289d8e244ab4
-    # https://github.com/osu-xai/pytorch-saliency/blob/master/saliency/vanilla/saliency.py
-    # https://github.com/osu-xai/pytorch-saliency/blob/master/saliency/saliency.py
+    # source: 
+    #    https://towardsdatascience.com/saliency-map-using-pytorch-68270fe45e80
+    #    https://medium.datadriveninvestor.com/visualizing-neural-networks-using-saliency-maps-in-pytorch-289d8e244ab4
+    #    https://github.com/osu-xai/pytorch-saliency/blob/master/saliency/vanilla/saliency.py
+    #    https://github.com/osu-xai/pytorch-saliency/blob/master/saliency/saliency.py
     # ============================================================================= 
 
     #for head_key in configs.head_input_list:            

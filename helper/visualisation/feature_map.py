@@ -1,9 +1,18 @@
+# =============================================================================
+# alphabetic order misc
+# =============================================================================
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 import random
 import torch
+
+# =============================================================================
+# torch
+# =============================================================================
 import os
+
+
 
 class FeatureMap():
     # =============================================================================
@@ -65,7 +74,7 @@ class FeatureMap():
         
         self.feature_maps = active[self.layer_str]
 
-        print('self.feature_maps', self.feature_maps.data.shape)
+        # print('self.feature_maps', self.feature_maps.data.shape)
         
         '''
         output = self.model(img_tensor, mode='explain')
@@ -84,7 +93,7 @@ class FeatureMap():
         
         # plt.figure(figsize=(100,100))
         amount = self.feature_maps.shape[1]
-        print("amount of feature maps:", amount)
+        # print("amount of feature maps:", amount)
         if amount < 9:
             sample_amount = amount
             y_axis = 3
@@ -103,7 +112,7 @@ class FeatureMap():
             
         # currently not random
         random_samples = range(0, amount) # random.sample(range(0, amount), sample_amount)
-        print("random_samples", random_samples)
+        # print("random_samples", random_samples)
         counter = 0  
         idx, idx2 = [0, 0]
         for idx in range(0, x_axis):
