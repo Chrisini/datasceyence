@@ -2,9 +2,10 @@
 
 Collection of my deep learning in ophthalmology projects - built as a framework.
 
+## Theory
 Covering theory here: https://variint.github.io/datasceyence
 
-Main sources:
+## Main sources:
 * [PixelSSL](https://github.com/ZHKKKe/PixelSSL) 
 * [SSL4MIS](https://github.com/HiLab-git/SSL4MIS)
 
@@ -12,25 +13,31 @@ Main sources:
 * [ ] need to change transforms - has to be for every item key that contains "img" not is equal to ... (same with "msk")
 
 
-## Function calls
+## Conventions
 
-Generally, class functions with prefix **"run_"** can be called. For any sort of logging or plotting, call **"log"** functions
+* class functions with prefix **"run_"** can be called
+* logging or plotting, call **"log"** functions
+* every helper code inherits its template class **"template.py"**
 
-Every helper code inherits its template class
 
-The main projects I focus on here are:
+## Code structure 
 
-1. DecentNet - an approach to achieve disentanglement in early layers of the model.
-2. MeanTeacher - code for domain adaptation.
-3. MultiTask - a model with multiple heads, hence able to learn multiple task simultaneously.
+### Main files
 
-## Explanation of modules
-
-| Component | Description | Called by | 
+| Component | Description | Framework | 
 | --- | --- | --- |
-| **configs** | Settings: .ini files |
+| **run_bimt** | just testing a baseline: Brain-inspired modular training: https://github.com/KindXiaoming/BIMT/blob/main/mnist_3.5.ipynb | Pytorch | 
+| **run_decentnet** | currently working on a modular convnet | Pytorch Lightning | 
+| **run_meanteacher** | my master thesis - unsupervised domain adaptation and semi-supervised learning | Pytorch | 
+
+
+### Explanation of dirs
+
+| Component | Description | Called by | Notes |
+| --- | --- | --- | --- |
+| **configs** | Settings: .ini files | | (currently not in use) |
 | **data_prep** | csv data preparation for dataloader | prepare_.ipybn | 
-| **examples** | Unit tests for helper modules | utest_.ipybn | 
+| **examples** | Unit tests for helper modules and general code testing | utest_.ipybn | 
 | **helper** | Helper modules | - |
 | **helper.compute** | Compute Unit - for each head (seg/class/reg, bin/multi), computes loss and metrics | run_.ipybn | 
 | **helper.compute.loss** | Loss functions, called in compute |
@@ -43,7 +50,7 @@ The main projects I focus on here are:
 | **helper.visualisation** | explainability, interpretability, plots | run_.ipybn | 
 
 
-## Loss functions in **helper.compute.loss**
+### Loss functions in **helper.compute.loss**
 | Component | Loss+Source | Type | examples.utest_ |
 | --- | --- | --- | --- |
 | **loss.corn** | [Conditional Ordinal Regression for NN](https://github.com/Raschka-research-group/coral-pytorch) | ordinal regression | utest_loss_ordered_class |
@@ -54,7 +61,7 @@ The main projects I focus on here are:
 | **loss.iou** | [IoU Loss/Jaccard](https://github.com/qubvel/segmentation_models.pytorch/blob/master/segmentation_models_pytorch/losses/jaccard.py) | iou | utest_loss_seg |
 | **loss.supcon** | [Supervised Contrastive Loss](https://github.com/HobbitLong/SupContrast/blob/master/losses.py) | representation learning | not tested yet |
 
-## Models in **helper.models**
+### Models in **helper.models**
 | Component | Model+Source | Type | examples.utest_ |
 | --- | --- | --- | --- |
 | **model.decentblock** | ready to use decent model | ? | not tested yet |
@@ -64,13 +71,13 @@ The main projects I focus on here are:
 | **model.block.head_block** | linear layer or seg head | head(s) | not tested yet |
 | **model.block.noise_block** | Gaussian Noise layer | ? | not tested yet |
 
-## Data samplers in in **helper.sampler**
+### Data samplers in in **helper.sampler**
 | Component | Sampler+Source | Type | examples.utest_ |
 | --- | --- | --- | --- |
 | **sampler.mixed_batch** | Mixed Batch Sampling | equally sampled images for each class in a batch | utest_sampler_mixed_batch |
 
 
-## Explainability, Interpretability and Visualisation in **helper.visualisation**
+### Explainability, Interpretability and Visualisation in **helper.visualisation**
 | Component | Method+Source | Type | examples.utest_ |
 | --- | --- | --- | --- |
 | **visualisation.deepdream**| [DeepDream](https://github.com/juanigp/Pytorch-Deep-Dream/blob/master/Deep_Dream.ipynb) | layer ?? | utest_vis_deepdream |
@@ -116,6 +123,8 @@ Guide on how to write/change the data script
 #    collector of data within a class 
 # writes:
 #    csv file, png images, ...
+# unit test:
+#    ipynb file path
 # notes:
 #    Whatever comes into your mind
 # sources:
