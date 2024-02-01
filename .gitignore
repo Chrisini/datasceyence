@@ -14,7 +14,7 @@ examples/munit/results/
 examples/munit/visuals/
 examples/gauda_domain/
 examples/miml
-
+dumpster/
 
 data_prep/*.csv
 
