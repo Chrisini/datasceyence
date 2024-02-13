@@ -4,7 +4,7 @@ opencv-python==4.7.0.72
 pandas==1.5.3
 Pillow==9.4.0
 pytorch-lightning==2.1.0
-scikit-image==0.20.0
+scikit-image
 scikit-learn==1.2.2
 scipy==1.9.1
 seaborn==0.12.2
