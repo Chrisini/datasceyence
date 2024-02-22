@@ -2,6 +2,12 @@
 
 Collection of my deep learning in ophthalmology projects - built as a framework.
 
+## Install
+* pytorch with cuda https://pytorch.org/
+* download https://graphviz.org/download/ then run:
+python -m pip install --use-pep517 --config-settings="--global-option=build_ext" --config-settings="--global-option=-IC:\Program Files\Graphviz\include" --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" pygraphviz
+* pip install -r requirements_[the version you want].txt
+
 ## Theory
 Covering theory here: https://variint.github.io/datasceyence
 

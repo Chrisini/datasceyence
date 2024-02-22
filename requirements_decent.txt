@@ -1,12 +1,17 @@
-matplotlib==3.7.1
+matplotlib
 medmnist==2.2.3
 opencv-python==4.7.0.72
-pandas==1.5.3
+pandas
 Pillow==9.4.0
 pytorch-lightning==2.1.0
-scikit-image==0.20.0
+scikit-image
+<<<<<<< HEAD
+scikit-learn
+scipy
+=======
 scikit-learn==1.2.2
 scipy==1.9.1
+>>>>>>> 4384af0c7885657b3a8a5c1e447f8dc2a24bf3a1
 seaborn==0.12.2
 #tensorboard==2.11.2
 #tensorboardX==2.6
@@ -16,5 +21,11 @@ timm==0.6.12
 torch-dreams==3.0.0
 torchmetrics==1.2.0
 torchsummary==1.5.1
+<<<<<<< HEAD
+torchvision
+tqdm==4.65.0
+graphviz
+=======
 torchvision==0.15.0
 tqdm==4.65.0
+>>>>>>> 4384af0c7885657b3a8a5c1e447f8dc2a24bf3a1
