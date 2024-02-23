@@ -1,11 +1,12 @@
 # DatascEYEnce
 
-Collection of my deep learning in ophthalmology projects - built as a framework.
+* Collection of my deep learning in ophthalmology projects. 
+* Currently focusing on the modular network 'DecentNet'.
 
 ## Install
 * pytorch with cuda https://pytorch.org/
 * download https://graphviz.org/download/ then run:
-python -m pip install --use-pep517 --config-settings="--global-option=build_ext" --config-settings="--global-option=-IC:\Program Files\Graphviz\include" --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" pygraphviz
+``` python -m pip install --use-pep517 --config-settings="--global-option=build_ext" --config-settings="--global-option=-IC:\Program Files\Graphviz\include" --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" pygraphviz ```
 * pip install -r requirements_[the version you want].txt
 
 ## Theory
