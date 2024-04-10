@@ -1,0 +1,58 @@
+import torch
+import torchvision # from torchvision import datasets, transforms
+import numpy as np
+from sklearn.model_selection import train_test_split
+from medmnist import RetinaMNIST
+from data.template import TemplateData
+
+class DataRetinaMNIST(TemplateData):
+    def __init__(self, train_kwargs, model_kwargs):
+        
+        # transforms
+        self.transforms = torchvision.transforms.Compose(self.get_transforms(train_kwargs))       
+        
+        trainset = RetinaMNIST(split="train", transform=self.transforms, download=True)
+        valset = RetinaMNIST(split="train", transform=self.transforms, download=True)
+        testset = RetinaMNIST(split="test", transform=self.transforms, download=True) 
+        
+        model_kwargs['n_classes'] = len(trainset.labels)
+        
+        train_indices = range(train_kwargs["train_size"])
+        val_indices = range(train_kwargs["val_size"])
+        test_indices = range(train_kwargs["test_size"])
+        
+        self.set_data(train_indices=train_indices, val_indices=val_indices, test_indices=test_indices, 
+                      trainset=trainset, valset=valset, testset=testset, 
+                      train_kwargs=train_kwargs) # TemplateData      
+        
+        self.log_info()
+    
+    def log_info(self):
+        import medmnist
+        from medmnist import INFO, Evaluator
+
+        info = INFO['retinamnist']
+        task = info['task']
+        n_channels = info['n_channels']
+        n_classes = len(info['label'])
+
+        DataClass = getattr(medmnist, info['python_class'])
+
+        for value, key in info.items():
+            print(value, ":", key)
+    
+    def get_transforms(self, train_kwargs):
+        
+        # rgb (3 channels) to grayscale (1 channel)
+        transform_list = [torchvision.transforms.Grayscale(num_output_channels=1),
+                          torchvision.transforms.Resize(size=train_kwargs["img_size"]),
+                          torchvision.transforms.ToTensor(),
+                          torchvision.transforms.Normalize((0.1307,), (0.3081,))
+                         ]
+        
+        return transform_list
+            
+        
+        
+        
+        

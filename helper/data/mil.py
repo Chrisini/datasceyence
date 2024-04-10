@@ -1,4 +1,4 @@
-from dataset.template import *
+from data.template import *
 import skimage.io
 import skimage.util
 

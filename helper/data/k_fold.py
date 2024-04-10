@@ -1,4 +1,4 @@
-from dataset.template import TemplateDataset
+from data.template import TemplateDataset
 
 class KFoldDataset(TemplateDataset):
     # =============================================================================

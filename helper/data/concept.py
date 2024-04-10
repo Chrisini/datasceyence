@@ -1,5 +1,5 @@
-from dataset.template import *
-from dataset.transform.two_crop import * 
+from data.template import *
+from data.transform.two_crop import * 
 
 class PosNegConceptDataset(TemplateDataset):
     # =============================================================================
