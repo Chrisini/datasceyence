@@ -2,10 +2,25 @@ import torch
 import torchvision # from torchvision import datasets, transforms
 import numpy as np
 from sklearn.model_selection import train_test_split
-from medmnist import OCTMNIST, INFO
 from data.template import TemplateData
 
-class DataOCTMNIST(TemplateData):
+INFO = {
+    "octmnist": {
+        "python_class": "OCTA500",
+        "description": "The OCTA500 is based on optical coherence tomography (OCT) images for retinal diseases. The dataset is comprised of n diagnosis categories, leading to a multi-class classification task. We split the dataset with a ratio of n:n:n into training, validation and testset. The source images are gray-scale, and their sizes are (n−n)×(n−n). We center-crop the images and resize them into c×w×h.",
+        "task": "multi-class",
+        "label": {
+            "0": "choroidal neovascularization",
+            "1": "diabetic macular edema",
+            "2": "drusen",
+            "3": "normal",
+        },
+        "n_channels": 1,
+        "n_samples": {"train": 0, "val": 0, "test": 0},
+    },
+}
+
+class DataOCTA500(TemplateData):
     def __init__(self, train_kwargs, model_kwargs):
         
         # transforms
@@ -22,7 +37,8 @@ class DataOCTMNIST(TemplateData):
         train_indices = range(train_kwargs["train_size"])
         val_indices = range(train_kwargs["val_size"])
         test_indices = range(train_kwargs["test_size"])
-                
+        
+        # from parent
         self.set_data(train_indices=train_indices, val_indices=val_indices, test_indices=test_indices, 
                       trainset=trainset, valset=valset, testset=testset, 
                       train_kwargs=train_kwargs) # TemplateData     

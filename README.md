@@ -47,8 +47,8 @@
 | **helper.compute** | Compute Unit - for each head (seg/class/reg, bin/multi), computes loss and metrics | run_.ipybn | 
 | **helper.compute.loss** | Loss functions, called in compute |
 | **helper.compute.metrics** | Metrics (fscore, jac, rec, acc, kappa, ...) | used in compute |
-| **helper.dataset** | Dataset | run_.ipybn | 
-| **helper.dataset.transform** | Data augmentation | used by dataset |
+| **helper.data** | Datasets and Dataloaders | run_.ipybn | 
+| **helper.data.transform** | Data augmentation | used by dataset |
 | **helper.model** | Models | run_.ipybn | 
 | **helper.model.block** | Modules of the models | used by model |
 | **helper.sampler** | Sampler | run_.ipybn | 

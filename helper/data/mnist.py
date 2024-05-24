@@ -16,7 +16,7 @@ class DataMNIST(TemplateData):
         testset = torchvision.datasets.MNIST('examples/example_data/mnist', train=False, download=True,
                                       transform=self.transforms)
         
-        model_kwargs['n_classes'] = len(dataset.targets)
+        model_kwargs['n_classes'] = len(torchvision.datasets.MNIST.classes)
         
         # indices for splitting and/or reducing data
         indices = np.arange(len(dataset))
