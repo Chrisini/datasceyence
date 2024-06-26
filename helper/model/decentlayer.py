@@ -257,12 +257,12 @@ class DecentLayer(nn.Module):
                 print("nooooooooooooooooo")
                 pass
                 
-            elif self.ci_metric == '':
+            elif self.ci_metric == 'mi':
                 # mutual information
                 print("nooooooooooooooooo")
                 pass
                 
-            elif self.ci_metric == '':
+            elif self.ci_metric == 'tay':
                 # Hessian matrix / Taylor
                 print("nooooooooooooooooo")
                 pass
@@ -273,6 +273,7 @@ class DecentLayer(nn.Module):
                 
             elif self.ci_metric == 'random':
                 ci.append( np.array(random.random()) )
+                
             else:
                 print("DECENT WARNING: no valid ci metric chosen.")
 

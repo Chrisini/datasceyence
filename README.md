@@ -21,7 +21,8 @@
 ## Conventions
 
 * class functions with prefix **"run_"** can be called
-* logging or plotting, call **"log"** functions
+* logging, call **"log"** functions
+* plotting, call **"plot"** functions
 * every helper code inherits its template class **"template.py"**
 
 
@@ -32,6 +33,7 @@
 | Component | Description | Framework | 
 | --- | --- | --- |
 | **run_bimt** | just testing a baseline: Brain-inspired modular training: https://github.com/KindXiaoming/BIMT/blob/main/mnist_3.5.ipynb | Pytorch | 
+| **run_capsnet** | just testing a baseline: https://github.com/jindongwang/Pytorch-CapsuleNet/blob/master/test_capsnet.py | Pytorch | 
 | **run_decentnet** | currently working on a modular convnet | Pytorch Lightning | 
 | **run_meanteacher** | my master thesis - unsupervised domain adaptation and semi-supervised learning | Pytorch | 
 
@@ -45,14 +47,16 @@
 | **examples** | Unit tests for helper modules and general code testing | utest_.ipybn | 
 | **helper** | Helper modules | - |
 | **helper.compute** | Compute Unit - for each head (seg/class/reg, bin/multi), computes loss and metrics | run_.ipybn | 
-| **helper.compute.loss** | Loss functions, called in compute |
-| **helper.compute.metrics** | Metrics (fscore, jac, rec, acc, kappa, ...) | used in compute |
+| **helper.compute.loss** | Loss functions |
+| **helper.compute.metrics** | Metrics (fscore, jac, rec, acc, kappa, ...) |  |
 | **helper.data** | Datasets and Dataloaders | run_.ipybn | 
 | **helper.data.transform** | Data augmentation | used by dataset |
 | **helper.model** | Models | run_.ipybn | 
 | **helper.model.block** | Modules of the models | used by model |
 | **helper.sampler** | Sampler | run_.ipybn | 
-| **helper.visualisation** | explainability, interpretability, plots | run_.ipybn | 
+| **helper.visualisation** | explainability, interpretability, plots | plotting/run_.ipybn | 
+| **plotting** | calling helper.visualisation stuff | plotting/run_.ipybn |
+| **readme** | graphics | - |
 
 
 ### Loss functions in **helper.compute.loss**
