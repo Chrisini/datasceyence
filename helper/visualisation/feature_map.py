@@ -3,14 +3,17 @@
 # =============================================================================
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+import pandas as pd
 from PIL import Image
 import random
 import torch
 
+
 # =============================================================================
 # torch
 # =============================================================================
-import os
+
 
 
 class DecentFeatureMap():
@@ -109,6 +112,8 @@ class DecentFeatureMap():
         
         print('feature map shape', self.feature_maps.shape)
         
+        #filter_list = []
+        
         # todo, we cannot use 
         # for i_map in range(self.feature_maps.shape[1]):
         # because rn we have more filters than feature maps ... idk how this even works
@@ -121,20 +126,24 @@ class DecentFeatureMap():
                 m = self.model.decent1.filter_list[i_map].m_this.data.squeeze().detach().cpu().numpy().item()
                 n = self.model.decent1.filter_list[i_map].n_this.data.squeeze().detach().cpu().numpy().item()
                 tmp_file_name = f'hid_id{self.batch_idx}_{int(m)}_{int(n)}_{1}.png'
+                #filter_list.append(f"filter_{int(m)}_{int(n)}_{1}")
             elif self.layer_str == 'decent2':
                 m = self.model.decent2.filter_list[i_map].m_this.data.squeeze().detach().cpu().numpy().item()
                 n = self.model.decent2.filter_list[i_map].n_this.data.squeeze().detach().cpu().numpy().item()
                 tmp_file_name = f'hid_id{self.batch_idx}_{int(m)}_{int(n)}_{2}.png'
+                #filter_list.append(f"filter_{int(m)}_{int(n)}_{2}")
             elif self.layer_str == 'decent3':
                 m = self.model.decent3.filter_list[i_map].m_this.data.squeeze().detach().cpu().numpy().item()
                 n = self.model.decent3.filter_list[i_map].n_this.data.squeeze().detach().cpu().numpy().item()
                 tmp_file_name = f'hid_id{self.batch_idx}_{int(m)}_{int(n)}_{3}.png'
+                #filter_list.append(f"filter_{int(m)}_{int(n)}_{3}")
             elif self.layer_str == 'decent1x1':
                 m = self.model.decent1x1.filter_list[i_map].m_this.data.squeeze().detach().cpu().numpy().item()
                 n = self.model.decent1x1.filter_list[i_map].n_this.data.squeeze().detach().cpu().numpy().item()
                 # the class that is connected to the last layer's filters via global pooling
                 # the class has the same order as the list ... i hope ...
                 tmp_file_name = f'pool_id{self.batch_idx}_{int(m)}_{int(n)}_{4}_cl{i_map}.png'
+                #filter_list.append(f"filter_{int(m)}_{int(n)}_{4}")
             else:
                 print("DECENT WARNING: Layer not found")
 
@@ -144,7 +153,11 @@ class DecentFeatureMap():
             # hid_id0_Parameter containing:\ntensor([1.], device='cuda:0')_Parameter containing:\ntensor([6.], device='cuda:0')_1.png"
             
             # plt_cam_id{batch_idx}_mo{pred_max.detach().cpu().numpy().squeeze()}_gt{ground_truth.detach().cpu().numpy().squeeze()}.png
-            plt.imsave(os.path.join(self.log_dir, tmp_file_name), tmp_img)
+            tmp_path = os.path.join(self.log_dir, "activation_maps")
+            os.makedirs(tmp_path, exist_ok=True)
+            plt.imsave(os.path.join(tmp_path, tmp_file_name), tmp_img)
+        
+        #return filter_list
                     
 
 class FeatureMap():
@@ -291,5 +304,5 @@ class FeatureMap():
         
         if self.log_dir is not None:
             tmp = self.layer_str.replace("model", "").replace(".","")
-            path = os.path.join( self.log_dir, f"plt_id{self.batch_idx}_{tmp}.png" )
+            path = os.path.join(self.log_dir, f"plt_id{self.batch_idx}_{tmp}.png" )
             fig.savefig(path)

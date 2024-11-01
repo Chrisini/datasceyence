@@ -11,7 +11,7 @@ INFO = {
         "task": "multi-class",
         "label": {
             "0": "choroidal neovascularization",
-            "1": "diabetic macular edema",
+            "1": "diabetic retinopathy",
             "2": "drusen",
             "3": "normal",
         },
