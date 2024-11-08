@@ -250,7 +250,7 @@ class Operation(ABC):
         pass
     
     
-class OpScanFlatten(Operation):
+class octa500_flatten(Operation):
     """A flattening operation for :class:`data.OCTscan`.
     
     A flattening operation for :class:`data.OCTscan`.

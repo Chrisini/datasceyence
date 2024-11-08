@@ -4,11 +4,13 @@ import torchvision # from torchvision import datasets, transforms
 import numpy as np
 from sklearn.model_selection import train_test_split
 import pandas as pd
-import scipy.io
 
 from data.template import TemplateDataLoaderWrapper, TemplateDataset
-from data.flattening import *
+from data.transform.octa500_flatten import *
+from data.transform.octa500_crop import *
+from data.transform.octa500_resize import *
 
+from PIL import Image
     
 
 INFO = {
@@ -59,7 +61,6 @@ class DataLoaderOCTA500(TemplateDataLoaderWrapper):
         
         # grayscale (1 channel)
         transform_list = [
-                          torchvision.transforms.Resize(size=train_kwargs["img_size"]),
                           torchvision.transforms.ToTensor(),
                           torchvision.transforms.Normalize((0.1307,), (0.3081,))
                          ]
@@ -88,13 +89,17 @@ class OCTA500Dataset(TemplateDataset):
 
         for i, filename in enumerate(csv_filenames):
             df = pd.read_csv(filename, delimiter=";", index_col=index_col)
-            df["dataset_type"] = [i]*len(df.index)
+            # df["dataset_type"] = [i]*len(df.index)
             csv_list.append(df)
 
         self.csv_data = pd.concat(csv_list, axis=0, ignore_index=False)
+                    
         
         #print("here template")
         #print(self.csv_data)
+        
+        print(mode)
+        print(self.csv_data)
                 
         self.csv_data = self.csv_data[self.csv_data["mode"].str.contains(mode)]
         
@@ -122,22 +127,33 @@ class OCTA500Dataset(TemplateDataset):
             index=index.tolist()
 
         path = self.csv_data.iloc[index]['img_path']    
-        image = Image.open(path)   
-        
+        # image = Image.open(skimage.io.imread(filename)   
+        img = skimage.io.imread(path)
         
         img_id_minus_one = 200 - 1
         path = self.csv_data.iloc[index]['msk_path']
         mat = scipy.io.loadmat(path)
-        mask = mat["Layer"][:, img_id_minus_one]
+        msk = mat["Layer"][:, img_id_minus_one]
         
-        label = self.csv_data.iloc[index]['lbl_disease']
+        lbl = self.csv_data.iloc[index]['lbl_disease']
         
+        img_id = self.csv_data.iloc[index]['img_id']
+                
         if self.transforms:
-            flt = OpScanFlatten(image.copy(), mask.copy())
-            image, mask = flt.execute() # flattened
+            flt = octa500_flatten(img.copy(), msk.copy())
+            img, msk = flt.execute() # flattened
+            img, msk, _ = octa500_crop(img, msk) # should probably save this mask too ? 
+            img, msk = octa500_resize(img=img, msk=msk, size=self.image_size)
+            img = Image.fromarray(img)
+            img = self.transforms(img)
 
+        lbl = torch.tensor(lbl, dtype=torch.long)
         
-        return image, label, mask # rewrite function in case other stuff is needed
+        img_id = torch.tensor(img_id, dtype=torch.long)
+        
+        msk = torch.tensor(np.array(msk))
+        
+        return img, lbl, msk, img_id # rewrite function in case other stuff is needed
     
 
             
