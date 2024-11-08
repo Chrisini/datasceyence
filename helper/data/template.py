@@ -11,9 +11,10 @@ from torch.utils.data import Dataset
 import torchvision.transforms
 
 
-class TemplateData():
+class TemplateDataLoaderWrapper():
     # =============================================================================
     #
+    # call this
     # Parent Dataset
     # create objects based on child class
     #
@@ -39,46 +40,51 @@ class TemplateData():
         self.xai_dataloader = None
         
         self.set_data(None, None, train_kwargs)
+    
+    def log_info(self):
+        
+        for value, key in self.info.items():
+            print(value, ":", key)
         
     def set_data(self, train_indices, val_indices, test_indices, trainset, valset, testset, train_kwargs):
+        # do not change this. call in init
         
         # train subset
-        train_subset = torch.utils.data.Subset(trainset, train_indices)
+        if train_kwargs["train_size"] > 0:
+            train_subset = torch.utils.data.Subset(trainset, train_indices)
+            self.train_dataloader = torch.utils.data.DataLoader(train_subset, 
+                                                           shuffle=True, 
+                                                           batch_size=train_kwargs["batch_size"], 
+                                                           num_workers=train_kwargs["num_workers"])
         # val subset
-        val_subset = torch.utils.data.Subset(valset, val_indices)
+        if train_kwargs["val_size"] > 0:
+            val_subset = torch.utils.data.Subset(valset, val_indices)
+            self.val_dataloader = torch.utils.data.DataLoader(val_subset, 
+                                                         shuffle=False, 
+                                                         batch_size=train_kwargs["batch_size"], 
+                                                         num_workers=train_kwargs["num_workers"]
+                                                         # , persistent_workers=True
+                                                         )
         # test subset
         if train_kwargs["test_size"] > 0:
             testset = torch.utils.data.Subset(testset, test_indices)
-        
-        # train dataloader
-        self.train_dataloader = torch.utils.data.DataLoader(train_subset, 
-                                                       shuffle=True, 
-                                                       batch_size=train_kwargs["batch_size"], 
-                                                       num_workers=train_kwargs["num_workers"])
+            # test dataloader with batch size
+            self.test_dataloader = torch.utils.data.DataLoader(testset, 
+                                                         shuffle=False, 
+                                                         batch_size=train_kwargs["batch_size"], 
+                                                         num_workers=train_kwargs["num_workers"]
+                                                         # , persistent_workers=True
+                                                        )    
 
-        # val dataloader
-        self.val_dataloader = torch.utils.data.DataLoader(val_subset, 
-                                                     shuffle=False, 
-                                                     batch_size=train_kwargs["batch_size"], 
-                                                     num_workers=train_kwargs["num_workers"]
-                                                     # , persistent_workers=True
-                                                     )
-        
-        # test dataloader with batch size
-        self.test_dataloader = torch.utils.data.DataLoader(testset, 
-                                                     shuffle=False, 
-                                                     batch_size=train_kwargs["batch_size"], 
-                                                     num_workers=train_kwargs["num_workers"]
-                                                     # , persistent_workers=True
-                                                    )    
-        
-        # same as test dataloader, but batch size = 1
-        self.xai_dataloader = torch.utils.data.DataLoader(testset, 
-                                                     shuffle=False, 
-                                                     batch_size=1, 
-                                                     num_workers=train_kwargs["num_workers"]
-                                                     # , persistent_workers=True
-                                                    )    
+            # same as test dataloader, but batch size = 1
+            self.xai_dataloader = torch.utils.data.DataLoader(testset, 
+                                                         shuffle=False, 
+                                                         batch_size=1, 
+                                                         num_workers=train_kwargs["num_workers"]
+                                                         # , persistent_workers=True
+                                                        )    
+       
+            
         
     
     def get_transforms(self, train_kwargs):
@@ -135,6 +141,7 @@ class TemplateData():
 class TemplateDataset(Dataset):
     # =============================================================================
     #
+    # use this to feed the Data
     # Parent Dataset
     # create objects based on child class
     #
@@ -146,7 +153,7 @@ class TemplateDataset(Dataset):
         self.mode = mode # train/val
         self.image_size = image_size
         
-        self.p_aug = p_aug
+        #self.p_aug = p_aug
         
         self.channels=channels
         
@@ -164,11 +171,11 @@ class TemplateDataset(Dataset):
                 
         self.csv_data = self.csv_data[self.csv_data["mode"].str.contains(mode)]
         
-        if reduced_data:
-            self.csv_data = self.csv_data.sample(frac=1).reset_index(drop=True)
-            self.csv_data = self.csv_data.head(200)
+        #if reduced_data:
+        #    self.csv_data = self.csv_data.sample(frac=1).reset_index(drop=True)
+        #    self.csv_data = self.csv_data.head(200)
         
-        self.transforms = torchvision.transforms.Compose(self.get_transforms())
+        # self.transforms = torchvision.transforms.Compose(self.get_transforms())
         
     def __len__(self):
         return len(self.csv_data)
@@ -187,43 +194,32 @@ class TemplateDataset(Dataset):
         if torch.is_tensor(index):
             index=index.tolist()
 
-        path = self.csv_data.iloc[index]['image_path']       
-        image = Image.open(path)
-            
-        if self.transforms:
-            # apply transforms to both images
-            tct = TwoCropTransform(self.transforms)
-            image = tct(image)
-            
+        path = self.csv_data.iloc[index]['image_path']    
+        
+        image = Image.open(path)            
         label = self.csv_data.iloc[index]['lbl']
         
-        # To change: you can add labels here
-        item = {
-            'img' : image,
-            'lbl' : label
-        } 
-        
-        return item
+        return image, label # rewrite function in case other stuff is needed
     
-    def get_mbs_labels(self):
-        return list(self.csv_data["lbl"])
     
-    def get_transforms(self):
+    def getitem_alternative(self, index):
         # =============================================================================
+        # parameters:
+        #   index of single image from dataloader
+        # returns:
+        #   dictionary "item" with:
+        #       image (transformed)
+        #       label
         # notes:
-        #   overwritten for training set
-        #   when overwriting a transform, use own function ToTensor instead of transforms.ToTensor
-        #   dream_c{label}_{patch_id}.jpg
         # =============================================================================
         
-        transform_list = [
-            ResizeCrop(self.image_size),
-            RandomVerticalFlip(p=0.1),
-            RandomHorizontalFlip(p=0.5),
-            RandomAugmentationsSoft(p=self.p_aug),
-            RandomBlur(p=0.3),
-            ToTensor(),
-            Normalise()
-        ]
-        return transform_list
+        if torch.is_tensor(index):
+            index=index.tolist()
+
+        path = self.csv_data.iloc[index]['image_path']    
+        
+        image = Image.open(path)            
+        label = self.csv_data.iloc[index]['lbl']
+        
+        return image, label, mask
 

@@ -2,9 +2,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+import seaborn as sns
 
 
-def plot_examples(cms):
+def plot_example(cmap):
+    """
+    helper function to plot one colormap
+    """
+    np.random.seed(19680801)
+    data = np.random.randn(5, 5)
+    
+    psm = plt.pcolormesh(data, cmap=cmap, rasterized=True, vmin=-4, vmax=4)
+    plt.colorbar(psm)
+    plt.show()
+
+def plot_two_examples(cms):
     """
     helper function to plot two colormaps
     """
@@ -52,5 +64,9 @@ newcolors = np.vstack((top(np.linspace(0, 0.8, 128)),
                        bottom(np.linspace(0.2, 1, 128))))
 variint_map_b = ListedColormap(newcolors, name='variint_map_b')
 
-plot_examples([variint_map_a, variint_map_b])
+sns_paired = sns.color_palette("Paired")
+pal_list = [sns_paired[8], sns_paired[9], sns_paired[0], sns_paired[1], sns_paired[2], sns_paired[3]]
+purple_blue_green = ListedColormap(pal_list, "purple_blue_green")
 
+pal_list = [sns_paired[2], sns_paired[8], sns_paired[9], sns_paired[0]]
+normal_amd_cnv_dr = ListedColormap(pal_list, "normal_amd_cnv_dr")

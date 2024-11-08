@@ -3,9 +3,9 @@ import torchvision # from torchvision import datasets, transforms
 import numpy as np
 from sklearn.model_selection import train_test_split
 from medmnist import INFO, RetinaMNIST
-from data.template import TemplateData
+from data.template import TemplateDataLoaderWrapper
 
-class DataRetinaMNIST(TemplateData):
+class DataLoaderRetinaMNIST(TemplateDataLoaderWrapper):
     def __init__(self, train_kwargs, model_kwargs):
         
         # transforms
@@ -15,8 +15,8 @@ class DataRetinaMNIST(TemplateData):
         valset = RetinaMNIST(split="train", transform=self.transforms, download=True)
         testset = RetinaMNIST(split="test", transform=self.transforms, download=True) 
         
-        info = INFO['retinamnist']
-        model_kwargs['n_classes'] = len(info['label'])
+        self.info = INFO['retinamnist']
+        model_kwargs['n_classes'] = len(self.info['label'])
         
         train_indices = range(train_kwargs["train_size"])
         val_indices = range(train_kwargs["val_size"])
@@ -28,11 +28,6 @@ class DataRetinaMNIST(TemplateData):
         
         self.log_info()
     
-    def log_info(self):
-        
-        info = INFO['retinamnist']
-        for value, key in info.items():
-            print(value, ":", key)
     
     def get_transforms(self, train_kwargs):
         

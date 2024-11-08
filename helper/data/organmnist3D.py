@@ -3,9 +3,9 @@ import torchvision # from torchvision import datasets, transforms
 import numpy as np
 from sklearn.model_selection import train_test_split
 from medmnist import OrganMNIST3D, INFO
-from data.template import TemplateData
+from data.template import TemplateDataLoaderWrapper
 
-class DataOrganMNIST3D(TemplateData):
+class DataLoaderOrganMNIST3D(TemplateDataLoaderWrapper):
     def __init__(self, train_kwargs, model_kwargs):
         
         # transforms

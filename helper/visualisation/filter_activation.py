@@ -16,7 +16,7 @@ import torch
 
 
 
-class DecentFeatureMap():
+class DecentFilterActivation():
     # =============================================================================
     # unit test: 
     #    examples/utest_vis_feature_map.ipynb
@@ -24,6 +24,7 @@ class DecentFeatureMap():
     #    https://towardsdatascience.com/how-to-visualize-convolutional-features-in-40-lines-of-code-70b7d87b0030
     #    https://towardsdatascience.com/convolutional-neural-network-feature-map-and-filter-visualization-f75012a5a49c
     #    https://discuss.pytorch.org/t/how-can-l-load-my-best-model-as-a-feature-extractor-evaluator/17254/4
+    # we call this filter activation in our paper - the definitions vary for this
     # =============================================================================
 
     def __init__(self, model, layer, layer_str, log_dir='', device="cpu"):
@@ -48,7 +49,7 @@ class DecentFeatureMap():
     def run(self, img_tensor, batch_idx):
         # =============================================================================
         # Feature map visualisation using hooks       
-        # A high activation means a certain feature was found. 
+        # A high activation means a certain feature was found. - not sure about this ...
         # A feature map is called the activations of a layer after the convolutional operation.
         # =============================================================================
         
@@ -160,7 +161,7 @@ class DecentFeatureMap():
         #return filter_list
                     
 
-class FeatureMap():
+class FilterActivation():
     # =============================================================================
     # unit test: 
     #    examples/utest_vis_feature_map.ipynb
