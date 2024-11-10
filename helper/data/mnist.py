@@ -5,8 +5,10 @@ from sklearn.model_selection import train_test_split
 from data.template import TemplateDataLoaderWrapper
 
 
-class DataLoaderMNIST(TemplateDataLoaderWrapper):
+class DataLoaderMNIST(): # TemplateDataLoaderWrapper
     def __init__(self, train_kwargs, model_kwargs):
+        
+        print("this dataset works in a different way, please do not use for decentnet")
         
         # transforms
         self.transforms = torchvision.transforms.Compose(self.get_transforms(train_kwargs))

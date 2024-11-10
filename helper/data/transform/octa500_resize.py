@@ -19,7 +19,12 @@ def octa500_resize(img, msk, size=28):
     new_size = (size, size)
 
     # image
-    img_resized = cv2.resize(img, new_size)
+    try:
+        img_resized = cv2.resize(img, new_size)
+    except:
+        img_resized = None
+        
+        print("potentially no image found")
 
     # mask
 
@@ -61,8 +66,10 @@ def octa500_resize(img, msk, size=28):
         #print("length of layer 1:", len(mask_resized_0))
 
         #print("amount of layers:", len(msk))
-    except:
+    except Exception as e:
+        msk_resized = None
         print("potentially no mask found")
+        print(e)
         
         
     return img_resized, msk_resized

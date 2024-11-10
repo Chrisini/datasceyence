@@ -46,7 +46,7 @@ class DecentFilterActivation():
         #print("Layer:", self.layer)
         #print("")
 
-    def run(self, img_tensor, batch_idx):
+    def run(self, img_tensor, img_id):
         # =============================================================================
         # Feature map visualisation using hooks       
         # A high activation means a certain feature was found. - not sure about this ...
@@ -57,7 +57,7 @@ class DecentFilterActivation():
         self.ii = img_tensor.data
         #self.m = image_tensor.ms_x # but i need 'this m' ... from the filter
         #self.n = image_tensor.ns_x
-        self.batch_idx = batch_idx
+        self.img_id = img_id
     
             
         # hook = Hook(module=self.layer)
@@ -111,7 +111,7 @@ class DecentFilterActivation():
         
         # self.feature_maps
         
-        print('feature map shape', self.feature_maps.shape)
+        # print('feature map shape', self.feature_maps.shape)
         
         #filter_list = []
         
@@ -126,24 +126,24 @@ class DecentFilterActivation():
             if self.layer_str == 'decent1':
                 m = self.model.decent1.filter_list[i_map].m_this.data.squeeze().detach().cpu().numpy().item()
                 n = self.model.decent1.filter_list[i_map].n_this.data.squeeze().detach().cpu().numpy().item()
-                tmp_file_name = f'hid_id{self.batch_idx}_{int(m)}_{int(n)}_{1}.png'
+                tmp_file_name = f'hid_id{self.img_id}_{int(m)}_{int(n)}_{1}.png'
                 #filter_list.append(f"filter_{int(m)}_{int(n)}_{1}")
             elif self.layer_str == 'decent2':
                 m = self.model.decent2.filter_list[i_map].m_this.data.squeeze().detach().cpu().numpy().item()
                 n = self.model.decent2.filter_list[i_map].n_this.data.squeeze().detach().cpu().numpy().item()
-                tmp_file_name = f'hid_id{self.batch_idx}_{int(m)}_{int(n)}_{2}.png'
+                tmp_file_name = f'hid_id{self.img_id}_{int(m)}_{int(n)}_{2}.png'
                 #filter_list.append(f"filter_{int(m)}_{int(n)}_{2}")
             elif self.layer_str == 'decent3':
                 m = self.model.decent3.filter_list[i_map].m_this.data.squeeze().detach().cpu().numpy().item()
                 n = self.model.decent3.filter_list[i_map].n_this.data.squeeze().detach().cpu().numpy().item()
-                tmp_file_name = f'hid_id{self.batch_idx}_{int(m)}_{int(n)}_{3}.png'
+                tmp_file_name = f'hid_id{self.img_id}_{int(m)}_{int(n)}_{3}.png'
                 #filter_list.append(f"filter_{int(m)}_{int(n)}_{3}")
             elif self.layer_str == 'decent1x1':
                 m = self.model.decent1x1.filter_list[i_map].m_this.data.squeeze().detach().cpu().numpy().item()
                 n = self.model.decent1x1.filter_list[i_map].n_this.data.squeeze().detach().cpu().numpy().item()
                 # the class that is connected to the last layer's filters via global pooling
                 # the class has the same order as the list ... i hope ...
-                tmp_file_name = f'pool_id{self.batch_idx}_{int(m)}_{int(n)}_{4}_cl{i_map}.png'
+                tmp_file_name = f'pool_id{self.img_id}_{int(m)}_{int(n)}_{4}_cl{i_map}.png'
                 #filter_list.append(f"filter_{int(m)}_{int(n)}_{4}")
             else:
                 print("DECENT WARNING: Layer not found")
@@ -153,7 +153,7 @@ class DecentFilterActivation():
             # [Errno 22] Invalid argument: "examples/example_results\\lightning_logs\\dumpster\\version_13\\
             # hid_id0_Parameter containing:\ntensor([1.], device='cuda:0')_Parameter containing:\ntensor([6.], device='cuda:0')_1.png"
             
-            # plt_cam_id{batch_idx}_mo{pred_max.detach().cpu().numpy().squeeze()}_gt{ground_truth.detach().cpu().numpy().squeeze()}.png
+            # plt_cam_id{img_id}_mo{pred_max.detach().cpu().numpy().squeeze()}_gt{ground_truth.detach().cpu().numpy().squeeze()}.png
             tmp_path = os.path.join(self.log_dir, "activation_maps")
             os.makedirs(tmp_path, exist_ok=True)
             plt.imsave(os.path.join(tmp_path, tmp_file_name), tmp_img)
@@ -190,7 +190,7 @@ class FilterActivation():
         #print("Layer:", self.layer)
         #print("")
 
-    def run(self, img_tensor, batch_idx):
+    def run(self, img_tensor, img_id):
         # =============================================================================
         # Feature map visualisation using hooks       
         # A high activation means a certain feature was found. 
@@ -199,7 +199,7 @@ class FilterActivation():
         
         #print("i", img_tensor.data.shape)
         self.ii = img_tensor.data
-        self.batch_idx = batch_idx
+        self.img_id = img_id
             
         # hook = Hook(module=self.layer)
         
@@ -305,5 +305,5 @@ class FilterActivation():
         
         if self.log_dir is not None:
             tmp = self.layer_str.replace("model", "").replace(".","")
-            path = os.path.join(self.log_dir, f"plt_id{self.batch_idx}_{tmp}.png" )
+            path = os.path.join(self.log_dir, f"plt_id{self.img_id}_{tmp}.png" )
             fig.savefig(path)

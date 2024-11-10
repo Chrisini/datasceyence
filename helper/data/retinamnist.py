@@ -11,21 +11,20 @@ class DataLoaderRetinaMNIST(TemplateDataLoaderWrapper):
         # transforms
         self.transforms = torchvision.transforms.Compose(self.get_transforms(train_kwargs))       
         
+        # dataset
         trainset = RetinaMNIST(split="train", transform=self.transforms, download=True)
         valset = RetinaMNIST(split="train", transform=self.transforms, download=True)
         testset = RetinaMNIST(split="test", transform=self.transforms, download=True) 
         
+        # info
         self.info = INFO['retinamnist']
         model_kwargs['n_classes'] = len(self.info['label'])
         
-        train_indices = range(train_kwargs["train_size"])
-        val_indices = range(train_kwargs["val_size"])
-        test_indices = range(train_kwargs["test_size"])
-        
+        # from parent
+        train_indices, val_indices, test_indices = self.get_indices(train_kwargs)
         self.set_data(train_indices=train_indices, val_indices=val_indices, test_indices=test_indices, 
                       trainset=trainset, valset=valset, testset=testset, 
-                      train_kwargs=train_kwargs) # TemplateData      
-        
+                      train_kwargs=train_kwargs) # TemplateData             
         self.log_info()
     
     
