@@ -19,8 +19,8 @@ INFO = {
         "description": "The OCTA500 is based on optical coherence tomography (OCT) images for retinal diseases. The dataset is comprised of 4 diagnosis categories, leading to a multi-class classification task. We split the dataset as needed based on a CSV file into training, validation and testset. Possible split for validation of the decentnet: 0:0:180",
         "task": "multi-class",
         "label": {
-            "0": "choroidal neovascularization", # cnv + amd?
-            "1": "diabetic retinopathy", # dr
+            "0": "cnv", # cnv + amd?
+            "1": "dr", # dr
             "2": "amd", # amd
             "3": "normal", # normal
         },
@@ -141,7 +141,7 @@ class OCTA500Dataset(TemplateDataset):
                 
         if self.transforms:
             flt = octa500_flatten(img.copy(), msk.copy())
-            img, msk = flt.execute() # flattened
+            # img, msk = flt.execute() # flattened
             img, msk, _ = octa500_crop(img, msk) # should probably save this mask too ? 
             
             
