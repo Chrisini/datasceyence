@@ -419,10 +419,13 @@ class DecentLayer(nn.Module):
         # problem if all connections to a filter in decent1x1 are pruned, then there is no connection left todo
         # =============================================================================
         
+        # this prunes a filter if no weights left??
+        
         prev_len = len(self.filter_list)
         # somelist = [x for x in somelist if not determine(x)]
         self.filter_list = nn.ModuleList([tmp_filter for tmp_filter in self.filter_list if tmp_filter.weights.shape[1] != 0])
-        print("DECENT INFO: filter list length: ", prev_len, "->", len(self.filter_list))
+        if prev_len != len(self.filter_list)
+            print("DECENT INFO: filter list length: ", prev_len, "->", len(self.filter_list))
         
     
     def run_prune_channel(self, i_f:int, keep_ids:list) -> None:
