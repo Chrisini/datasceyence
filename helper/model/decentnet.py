@@ -378,7 +378,8 @@ class DecentNet(nn.Module):
         if self.new_cc_mode:
             self.update_new_connection_cost()
         else:
-            self.update_connection_cost()
+            pass
+            #self.update_connection_cost()
         
         
     def get_everything(self, current_epoch):
