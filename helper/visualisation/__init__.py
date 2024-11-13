@@ -1,1 +1,1 @@
-__all__ = ["deepdream", "feature_map", "guided_backprop", "filter_combination", "grandalf"]
+__all__ = ["deepdream", "filter_activation", "guided_backprop", "filter_combination", "grandalf", "colour"]

@@ -31,6 +31,8 @@ class DecentNet(nn.Module):
         
         self.ci_metric = model_kwargs["ci_metric"]
         
+        self.new_cc_mode = model_kwargs["new_cc_mode"]
+        
         self.log_dir = log_dir
 
         # backbone
@@ -101,7 +103,11 @@ class DecentNet(nn.Module):
 
         # init connection cost
         self.cc = []
-        self.update_connection_cost()
+        if self.new_cc_mode:
+            self.update_new_connection_cost()
+        else:
+            self.update_connection_cost()
+        
         
         # get a position in filter list
         self.m_l2_plot = self.decent2.filter_list[0].m_this.detach().cpu().numpy()
@@ -290,12 +296,65 @@ class DecentNet(nn.Module):
         fig.savefig(os.path.join(self.log_dir, f"connections_{self.ci_metric}_m{int(self.m_l2_plot[0])}_n{int(self.n_l2_plot[0])}_{str(current_epoch)}.png"))
     
     def update_connection_cost(self):
+        # this cc loss term is absolute crap!!!
         self.cc = []
         # self.cc.append(self.decent1.run_layer_connection_cost()) # maybe not even needed ...
-        self.cc.append(self.decent2.run_layer_connection_cost())
-        self.cc.append(self.decent3.run_layer_connection_cost())
-        self.cc.append(self.decent1x1.run_layer_connection_cost())
+        
+        tmp_cc, _ = self.decent2.run_layer_connection_cost()
+        self.cc.append(tmp_cc)
+        tmp_cc, _ = self.decent3.run_layer_connection_cost()
+        self.cc.append(tmp_cc)
+        tmp_cc, _ = self.decent1x1.run_layer_connection_cost()
+        self.cc.append(tmp_cc)
+        
         self.cc = torch.mean(torch.tensor(self.cc))
+        
+    def update_new_connection_cost(self):
+        # change new to norm
+        # todo list
+        # we need to get the max value of kernel magnitude of each layer
+        # we need to get the max value of manhattan distance of each layer (done)
+        # we have to normalise cc and md - add +e to not get zero!! (generally not important since we do not divide)
+        # we subtract them and get absolute value
+        # that is part of the loss term :) 
+        
+        # this should be updated after every pruning!!
+        
+        self.cc = []
+        # self.cc.append(self.decent1.run_layer_connection_cost()) # maybe not even needed ...
+        _, tmp_norm_cc = self.decent2.run_layer_connection_cost()
+        self.cc.append(tmp_norm_cc)
+        _, tmp_norm_cc = self.decent3.run_layer_connection_cost()
+        self.cc.append(tmp_norm_cc)
+        _, tmp_norm_cc = self.decent1x1.run_layer_connection_cost()
+        self.cc.append(tmp_norm_cc)
+        
+        # fine
+        self.cc = torch.mean(torch.tensor(self.cc))
+        
+    def update_normalised_channel_importance(self):
+        
+        self.ci = []
+        # self.cc.append(self.decent1.run_layer_connection_cost()) # maybe not even needed ...
+        _, tmp_norm_ci = self.decent2.run_layer_channel_importance()
+        self.ci.append(tmp_norm_ci)
+        _, tmp_norm_ci = self.decent3.run_layer_channel_importance()
+        self.ci.append(tmp_norm_ci)
+        _, tmp_norm_ci = self.decent1x1.run_layer_channel_importance()
+        self.ci.append(tmp_norm_ci)
+        
+        # fine
+        self.ci = torch.mean(torch.tensor(self.ci))
+        
+    def get_cc_and_ci_loss_term(self):
+        
+        # update of cc after each pruning (happening automatically)
+        # update of ci every n steps?? or is it too much?? = kernel magnitude
+        
+        # this needs to happen at each step?? seems a bit much 
+        self.update_normalised_channel_importance()
+        
+        return 1 - torch.abs(self.cc - self.ci)
 
     def update(self, current_epoch):
         # =============================================================================
@@ -316,10 +375,15 @@ class DecentNet(nn.Module):
     
         # connection cost has to be calculated after pruning
         # self.cc which is updated is used for loss function
-        self.update_connection_cost()
+        if self.new_cc_mode:
+            self.update_new_connection_cost()
+        else:
+            self.update_connection_cost()
+        
         
     def get_everything(self, current_epoch):
         
+        # in this we have the channel importance!!
         d1 = self.decent1.get_everything()
         d2 = self.decent2.get_everything()
         d3 = self.decent3.get_everything()

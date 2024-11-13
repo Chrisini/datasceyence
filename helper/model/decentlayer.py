@@ -146,7 +146,7 @@ class DecentLayer(nn.Module):
                     print("DECENT INFO: ckpt weight is zero. skip ...")
             
     
-    def run_layer_connection_cost(self) -> torch.Tensor:
+    def run_layer_connection_cost(self):
         # =============================================================================
         # compute connection cost for this layer - based on distance
         # returns:
@@ -165,12 +165,10 @@ class DecentLayer(nn.Module):
         #    only the active ones (we need to use the indices for that)
         #    for swapping i need ??
         # =============================================================================
-         
-        
         
         # connection cost list
         cc = []
-        
+        max_distance_of_layer = 0
         
         for f in self.filter_list:
             # for each filter we use the current position and all incoming positions
@@ -180,9 +178,6 @@ class DecentLayer(nn.Module):
             #msns = torch.cat([torch.tensor(f.ms_in), torch.tensor(f.ns_in)]) # .transpose(1,0)
             #print(msns.shape)
             #cc.append(torch.cdist(mn.unsqueeze(dim=0), msns.transpose(1,0), 'euclidean') / 8) # number comes from 9*9 = 81 [0-8]
-        
-            mn = torch.cat([f.m_this.unsqueeze(0), f.n_this.unsqueeze(0)]).transpose(1,0)
-            msns = torch.cat([f.ms_in.unsqueeze(0), f.ns_in.unsqueeze(0)]).transpose(1,0)
             #print(mn)
             #print(msns)
 
@@ -192,28 +187,135 @@ class DecentLayer(nn.Module):
             # mean from all non-nan values
             # 
             
+            # todo - to make it fully differentiable we have to get equivalents for torch, yay
+        
+            mn = torch.cat([f.m_this.unsqueeze(0), f.n_this.unsqueeze(0)]).transpose(1,0)
+            msns = torch.cat([f.ms_in.unsqueeze(0), f.ns_in.unsqueeze(0)]).transpose(1,0)
+            mn_tmp = mn.detach().cpu().numpy()
+            msns_tmp = msns.detach().cpu().numpy()
+            
+            # normalised by grid size :)
             if self.cc_metric == 'l1':
-                cc.append(torch.nanmean( torch.tensor( scipy.spatial.distance.cdist(mn.detach().cpu().numpy(), msns.detach().cpu().numpy(), 'cityblock') /self.grid_sqrt ) ))
+                tmp_distances = torch.tensor( scipy.spatial.distance.cdist(mn_tmp, msns_tmp, 'cityblock') /self.grid_sqrt )
             elif self.cc_metric == 'l2':
-                cc.append(torch.nanmean( torch.tensor( scipy.spatial.distance.cdist(mn.detach().cpu().numpy(), msns.detach().cpu().numpy(), 'euclidean') /self.grid_sqrt ) ))
+                tmp_distances = torch.tensor( scipy.spatial.distance.cdist(mn_tmp, msns_tmp, 'euclidean') /self.grid_sqrt )
             elif self.cc_metric == 'l2_torch':
-                cc.append(torch.nanmean( torch.cdist( a=mn.float(), b=msns.float(), p=2) /self.grid_sqrt ))
+                tmp_distances = torch.cdist( x1=mn.float(), x2=msns.float(), p=2).flatten() /self.grid_sqrt # i have no idea how this works
             elif self.cc_metric == 'linf':
-                cc.append(torch.nanmean( torch.tensor( scipy.spatial.distance.cdist(mn.detach().cpu().numpy(), msns.detach().cpu().numpy(), 'chebyshev') /self.grid_sqrt ) ))
+                tmp_distances = torch.tensor( scipy.spatial.distance.cdist(mn_tmp, msns_tmp, 'chebyshev') /self.grid_sqrt )
             elif self.cc_metric == 'cos':
-                cc.append(torch.nanmean( torch.tensor( scipy.spatial.distance.cdist(mn.detach().cpu().numpy(), msns.detach().cpu().numpy(), 'cosine') /self.grid_sqrt ) ))
+                tmp_distances = torch.tensor( scipy.spatial.distance.cdist(mn_tmp, msns_tmp, 'cosine') /self.grid_sqrt )
             elif self.cc_metric == 'jac':
-                cc.append(torch.nanmean( torch.tensor( scipy.spatial.distance.cdist(mn.detach().cpu().numpy(), msns.detach().cpu().numpy(), 'jaccard') /self.grid_sqrt ) ))
+                tmp_distances = torch.tensor( scipy.spatial.distance.cdist(mn_tmp, msns_tmp, 'jaccard') /self.grid_sqrt )
             elif self.cc_metric == 'cor':
-                cc.append(torch.nanmean( torch.tensor( scipy.spatial.distance.cdist(mn.detach().cpu().numpy(), msns.detach().cpu().numpy(), 'correlation') /self.grid_sqrt ) ))
+                tmp_distances = torch.tensor( scipy.spatial.distance.cdist(mn_tmp, msns_tmp, 'correlation') /self.grid_sqrt )
             else:
                 print("DECENT WARNING: no valid cc metric chosen.")
+                tmp_distances = None
+            
+            #print("this should give multiple distances")
+            #print(tmp_distances) # this should give multiple distances
+            
+            mean_value_of_filter = torch.nanmean(tmp_distances).unsqueeze(0) # to make it able to concat later - aka we make tensor(4) to tensor([4])
+            cc.append(mean_value_of_filter)
+            
+            max_distance_of_filter = torch.max(tmp_distances)
+            # print("the max value", max_distance_of_filter)
+            # update max distance of layer
+            if max_distance_of_layer < max_distance_of_filter:
+                max_distance_of_layer = max_distance_of_filter
 
         # mean connection cost of a layer
-        # mean from all non-nan values
-        return torch.nanmean(torch.tensor(cc))
+        # mean from all non-nan values - todo - check why there are nan values, maybe cause of pruning??
+        
+        #print("cc", cc)
+        
+        cc = torch.cat(cc)
+        #print("cc cat", cc)
+        mean_value_of_layer = torch.nanmean(cc) #torch.tensor(cc)
+        # normalise with max value to scale between 0 and 1
+        normalised_mean_value_of_layer = mean_value_of_layer / max_distance_of_layer+1e5
+        
+        return mean_value_of_layer, normalised_mean_value_of_layer # , max_cc
     
-    def run_channel_importance(self, i_f:int) -> list:
+    def run_layer_channel_importance(self):
+        # =============================================================================
+        # compute channel importance metric for pruning
+        # calculate the norm of each weight in filter with id i_f
+        # we need to call this in a loop to go through each filter
+        # returns:
+        #     ci: channel importance list of a filter
+        # notes:
+        #     based on l2 norm = magnitude = euclidean distance
+        # nonsense?
+        #    maybe the kernel trigger todo
+        #    print(self.filter_list[i_f].weights.shape)
+        #    print(self.filter_list[i_f].weights[:,i_w].shape)
+        # =============================================================================
+        
+        # channel importance list
+        ci = []
+        
+        # we get each weight in each filter
+        for f in self.filter_list:
+            for i_w in range(f.weights.shape[1]): # todo, sure this is 1 and not 0???
+                # importance of a kernel in a layer
+
+                if self.ci_metric == 'l1':
+                    # weight dependent - filter norm
+                    print("nooooooooooooooooo")
+                    # ci.append(self.filter_list[i_f].weights[:,i_w].norm(2).detach().cpu().numpy())
+                elif self.ci_metric == 'l2': # this is the only one working - l2
+                    # weight dependent - filter norm
+                    ci.append(f.weights[:,i_w].norm(2).unsqueeze(0)) # .detach().cpu().numpy()) # .detach().cpu().numpy()
+                elif self.ci_metric == '':
+                    # weight dependent - filter correlation
+                    print("nooooooooooooooooo")
+                elif self.ci_metric == '':
+                    # activation-based
+                    print("nooooooooooooooooo")
+                elif self.ci_metric == 'mi':
+                    # mutual information
+                    print("nooooooooooooooooo")
+                elif self.ci_metric == 'tay':
+                    # Hessian matrix / Taylor
+                    print("nooooooooooooooooo")
+                elif self.ci_metric == '':
+                    print("nooooooooooooooooo")
+                elif self.ci_metric == 'random':
+                    ci.append(torch.rand(1))# np.array(random.random()))
+                else:
+                    print("DECENT WARNING: no valid ci metric chosen.")
+                    
+                    
+                # tmp_importance is a single value, not a list like in the distances
+                # is this not already a mean??
+                # mean_value_of_weight = torch.nanmean(tmp_distances)
+                # tmp_importance)
+                    
+                # max_importance_of_weight = torch.max(tmp_importance)
+                # update max distance of layer
+                
+        #if max_importance_of_layer < max_importance_of_weight:
+        #        max_importance_of_layer = max_importance_of_weight
+
+        try:
+            ci = torch.cat(ci)
+            max_importance_of_layer = torch.max(ci) # torch.max(torch.tensor(ci))
+            # mean importance of a layer
+            # mean from all non-nan values - todo - check why there are nan values, maybe cause of pruning??
+            mean_importance_of_layer = torch.nanmean(ci) # TODO, for the future torch.tensor(
+            # maybe zero should be included though ... also, since we didn't remove whole filters that do not connect to anything, maybe there are problems
+            # normalise with max value to scale between 0 and 1
+            normalised_mean_importance_of_layer = mean_importance_of_layer / max_importance_of_layer+1e5
+        except Exception as e:
+            print(ci)
+            print(e)
+        
+        return mean_importance_of_layer, normalised_mean_importance_of_layer # ci, normalised_ci
+    
+    
+    def run_filter_channel_importance(self, i_f:int) -> list:
         # =============================================================================
         # compute channel importance metric for pruning
         # calculate the norm of each weight in filter with id i_f
@@ -239,10 +341,8 @@ class DecentLayer(nn.Module):
                 # weight dependent - filter norm
                 print("nooooooooooooooooo")
                 pass
-                
                 # ci.append(self.filter_list[i_f].weights[:,i_w].norm(2).detach().cpu().numpy())
-                
-            elif self.ci_metric == 'l2':
+            elif self.ci_metric == 'l2': # this is the only one working - l2
                 # weight dependent - filter norm
                 ci.append(self.filter_list[i_f].weights[:,i_w].norm(2).detach().cpu().numpy()) # .detach().cpu().numpy()
                 pass
@@ -276,9 +376,8 @@ class DecentLayer(nn.Module):
                 
             else:
                 print("DECENT WARNING: no valid ci metric chosen.")
-
-        
-        return ci 
+                
+        return ci
     
     def run_swap_filter(self):
         # =============================================================================
@@ -438,7 +537,7 @@ class DecentLayer(nn.Module):
                 target_groups.append(self.layer_name)
             
             # get all channel importances
-            ci = np.array(self.run_channel_importance(i_f)).flatten()
+            ci = np.array(self.run_filter_channel_importance(i_f)).flatten()
             #print("CI"*50)
             #print(ci)
             values.extend(ci)
@@ -474,7 +573,7 @@ class DecentLayer(nn.Module):
         for i_f in range(len(self.filter_list)):
             all_len += len(self.filter_list[i_f].ms_in)
             # list of lists
-            all_ci.append(self.run_channel_importance(i_f))
+            all_ci.append(self.run_filter_channel_importance(i_f))
             #tmp_ids = sorted(range(len(all_ci)), key=lambda sub: all_ci[sub])
           
         #print(all_len) # this is the size of the previous pruning
@@ -497,7 +596,7 @@ class DecentLayer(nn.Module):
             for i_f in range(len(self.filter_list)):
 
                 # channel importance list for this filter
-                ci = all_ci[i_f] # self.run_channel_importance(i_f)
+                ci = all_ci[i_f] # list of self.run_filter_channel_importance(i_f)
 
                 #print(ci)
                 #print(threshold_value)

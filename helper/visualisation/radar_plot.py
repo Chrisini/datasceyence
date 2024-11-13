@@ -33,7 +33,7 @@ def plot_all_filters(data, theta, colours, concept_labels, save_path=""): # only
                      horizontalalignment='center', verticalalignment='center')
         for d, color in zip(filter_data, colours):
             ax.plot(theta, d, color=color)
-            ax.fill(theta, d, facecolor=color, alpha=0.5, label='_nolegend_')
+            ax.fill(theta, d, facecolor=color, alpha=0.05, label='_nolegend_')
         ax.set_varlabels(concept_labels)
 
     # add legend relative to top-left plot
@@ -44,9 +44,12 @@ def plot_all_filters(data, theta, colours, concept_labels, save_path=""): # only
              horizontalalignment='center', color='black', weight='bold',
              size='large')
 
-    plt.savefig(os.path.join(save_path, "radar.png"), bbox_inches='tight')    
+    plt.savefig(os.path.join(save_path, "radar.png"), bbox_inches='tight') 
+    plt.close()
     
-def plot_each_filter(data, theta, make_pretty=False, colours=None, concept_labels=None, save_path=""):
+def plot_each_filter(data, theta, make_pretty=False, colours=None, concept_labels=None, save_path="", xlim_value=250):
+    
+    styles = ["-", "--", ]
     
     # Plot the n filters
     for title, filter_data in data:
@@ -56,13 +59,16 @@ def plot_each_filter(data, theta, make_pretty=False, colours=None, concept_label
                             subplot_kw=dict(projection='radar'))
             fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
         
-        
             if make_pretty:
                 ax.set_title(title, weight='bold', size='medium', position=(0.5, 1.1),
                              horizontalalignment='center', verticalalignment='center')
-            for d, color in zip(filter_data, colours):
-                ax.plot(theta, d, color=color, linewidth=4)
-                ax.fill(theta, d, facecolor=color, alpha=0.1, label='_nolegend_')
+            for i_length, (d, color) in enumerate(zip(filter_data, colours)):
+                plt.plot(theta, d, color=color, linewidth=5, linestyle=(i_length*5, (5, (len(filter_data)*5)-i_length )))  # Custom dashed line
+                #plt.plot(x, y, linestyle=(5, (5, 15)))
+                #plt.plot(x, y, linestyle=(10, (5, 15)))
+                #plt.plot(x, y, linestyle=(15, (5, 15)))
+                # ax.plot(theta, d, color=color, linewidth=5, alpha=0.6, linestyle='-')
+                # ax.fill(theta, d, facecolor=color, alpha=0.05, label='_nolegend_')
             ax.set_varlabels(concept_labels)
 
             if make_pretty:
@@ -70,6 +76,7 @@ def plot_each_filter(data, theta, make_pretty=False, colours=None, concept_label
                 _ = ax.legend(disease_labels, loc=(0.9, .95),
                                           labelspacing=0.1, fontsize='small')
 
+            plt.ylim(0, xlim_value)
             plt.savefig(os.path.join(save_path, f'''radar_{title}.png'''), bbox_inches='tight')    
             plt.close()    
         except Exception as E:

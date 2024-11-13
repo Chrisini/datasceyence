@@ -21,8 +21,8 @@ INFO = {
         #"MD5_224": "abc493b6d529d5de7569faaef2773ba3", # -> other sizes
         "task": "multi-class",
         "label": {
-            "0": "choroidal neovascularization", # cnv + amd?
-            "1": "diabetic macular edema", # dr
+            "0": "cnv", # cnv + amd?
+            "1": "dme", # dr
             "2": "drusen", # amd?
             "3": "normal", # normal
         },
@@ -36,7 +36,9 @@ class DataLoaderOCTMNIST(TemplateDataLoaderWrapper): # TemplateDataLoaderWrapper
     def __init__(self, train_kwargs, model_kwargs):
         
         # transforms
-        self.transforms = torchvision.transforms.Compose(self.get_transforms(train_kwargs))
+        train_transforms, inference_transforms = self.get_transforms(train_kwargs)
+        self.transforms = torchvision.transforms.Compose(train_transforms)
+        self.transforms = torchvision.transforms.Compose(inference_transforms)
         
         # dataset
         trainset = OCTMNIST(split="train", transform=self.transforms, download=True)
@@ -58,13 +60,26 @@ class DataLoaderOCTMNIST(TemplateDataLoaderWrapper): # TemplateDataLoaderWrapper
     def get_transforms(self, train_kwargs):
         
         # grayscale (1 channel)
-        transform_list = [
-                          torchvision.transforms.Resize(size=train_kwargs["img_size"]),
-                          torchvision.transforms.ToTensor(),
-                          torchvision.transforms.Normalize((0.1307,), (0.3081,))
-                         ]
+        # all the fun stuff
+        train_transforms = [
+            torchvision.transforms.Resize(size=train_kwargs["img_size"]),
+            torchvision.transforms.RandomRotation(degrees=2),
+            torchvision.transforms.RandomHorizontalFlip(p=0.5),
+            torchvision.transforms.ColorJitter(brightness=0.1, contrast=0.1),
+            torchvision.transforms.RandomAdjustSharpness(sharpness_factor=1.2, p=train_kwargs["p_augment"]),
+            torchvision.transforms.RandomApply([torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(0.5, 1.2))], p=train_kwargs["p_augment"]),
+            torchvision.transforms.ToTensor(),
+            torchvision.transforms.Normalize((0.1307,), (0.3081,))
+        ]
+        
+        # std
+        inference_transforms = [
+            torchvision.transforms.Resize(size=train_kwargs["img_size"]),
+            torchvision.transforms.ToTensor(),
+            torchvision.transforms.Normalize((0.1307,), (0.3081,))
+        ]
 
-        return transform_list
+        return train_transforms, inference_transforms
             
         
         

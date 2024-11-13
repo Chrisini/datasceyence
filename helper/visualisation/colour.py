@@ -68,5 +68,11 @@ sns_paired = sns.color_palette("Paired")
 pal_list = [sns_paired[8], sns_paired[9], sns_paired[0], sns_paired[1], sns_paired[2], sns_paired[3]]
 purple_blue_green = ListedColormap(pal_list, "purple_blue_green")
 
-pal_list = [sns_paired[2], sns_paired[8], sns_paired[9], sns_paired[0]]
+pal_list = [sns_paired[3], sns_paired[8], sns_paired[9], sns_paired[0]]
 normal_amd_cnv_dr = ListedColormap(pal_list, "normal_amd_cnv_dr")
+normal_amd_cnv_dr_classes = ["normal", "amd", "cnv", "dr"]
+
+pal_list = [sns_paired[9], sns_paired[0], sns_paired[8], sns_paired[3]]
+cnv_dr_amd_normal = ListedColormap(pal_list, "cnv_dr_amd_normal")
+cnv_dr_amd_normal_classes = ["cnv", "dr", "amd", "normal"]
+

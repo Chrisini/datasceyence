@@ -2,6 +2,7 @@ from data.transform.transform import *
 from data.transform.image2image import *
 
 import os
+import random
 
 import numpy as np
 import pandas as pd
@@ -10,6 +11,7 @@ import torch
 from torch.utils.data import Dataset
 import torchvision.transforms
 
+"""
 INFO = {
     "template": {
         "python_class": "template",
@@ -34,6 +36,7 @@ INFO = {
         "license": "CC BY 4.0",
     }
 }
+"""
 
 class TemplateDataLoaderWrapper():
     # =============================================================================
@@ -67,21 +70,31 @@ class TemplateDataLoaderWrapper():
         self.log_info()
         
     def get_indices(self, train_kwargs): # todo, make this random!!!!
+        
+        random.seed(19) # set a seed
+        
+        train_indices = []
+        val_indices = []
+        test_indices = []
+        
         # indices for splitting and/or reducing data
-        if train_kwargs["train_size"] == -1: # all
-            train_indices = range(self.info["n_samples"]["train"])
-        else: # total number
-            train_indices = range(train_kwargs["train_size"])
+        if train_kwargs["train_size"] == -1:
+            train_indices = range(self.info["n_samples"]["train"]) # all
+        elif self.info["n_samples"]["train"] != 0:
+            #train_indices = range(train_kwargs["train_size"])
+            train_indices = random.sample(range(self.info["n_samples"]["train"]), train_kwargs["train_size"])
             
-        if train_kwargs["val_size"] == -1: # all
-            val_indices = range(self.info["n_samples"]["val"])
-        else:# total number
-            val_indices = range(train_kwargs["val_size"])
+        if train_kwargs["val_size"] == -1:
+            val_indices = range(self.info["n_samples"]["val"]) # all
+        elif self.info["n_samples"]["val"] != 0: 
+            # val_indices = range(train_kwargs["val_size"])
+            val_indices = random.sample(range(self.info["n_samples"]["val"]), train_kwargs["val_size"])
             
-        if train_kwargs["test_size"] == -1: # all
-            test_indices = range(self.info["n_samples"]["test"])
-        else: # total number
-            test_indices = range(train_kwargs["test_size"])
+        if train_kwargs["test_size"] == -1:
+            test_indices = range(self.info["n_samples"]["test"]) # all
+        elif self.info["n_samples"]["test"] != 0:
+            # test_indices = range(train_kwargs["test_size"])
+            test_indices = random.sample(range(self.info["n_samples"]["test"]), train_kwargs["test_size"])
         
         return train_indices, val_indices, test_indices
     
@@ -179,6 +192,7 @@ class TemplateDataLoaderWrapper():
             transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
         ]
         
+        """
         # multiple
         transform_list = [
             ResizeCrop(self.image_size),
@@ -189,6 +203,8 @@ class TemplateDataLoaderWrapper():
             ToTensor(),
             Normalise()
         ]
+        """
+        
         return transform_list
 
 
