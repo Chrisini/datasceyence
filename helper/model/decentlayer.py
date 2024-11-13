@@ -424,7 +424,7 @@ class DecentLayer(nn.Module):
         prev_len = len(self.filter_list)
         # somelist = [x for x in somelist if not determine(x)]
         self.filter_list = nn.ModuleList([tmp_filter for tmp_filter in self.filter_list if tmp_filter.weights.shape[1] != 0])
-        if prev_len != len(self.filter_list)
+        if prev_len != len(self.filter_list):
             print("DECENT INFO: filter list length: ", prev_len, "->", len(self.filter_list))
         
     
