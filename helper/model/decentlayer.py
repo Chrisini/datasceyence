@@ -69,6 +69,10 @@ class DecentLayer(nn.Module):
         assert self.grid_sqrt == int(self.grid_sqrt), f"square root ({self.grid_sqrt}) from grid size {self.grid_size} not possible; possible exampes: 81 (9*9), 144 (12*12)"
         self.grid_sqrt = int(self.grid_sqrt)
         
+        self.max_importance_of_layer = None
+        self.max_distance_of_layer = 0
+        # self.max_importance_of_layer = torch.tensor([0]).to(device)
+        
         # =============================================================================
         # from ckpt or from scratch
         # =============================================================================
@@ -168,7 +172,7 @@ class DecentLayer(nn.Module):
         
         # connection cost list
         cc = []
-        max_distance_of_layer = 0
+        
         
         for f in self.filter_list:
             # for each filter we use the current position and all incoming positions
@@ -222,8 +226,8 @@ class DecentLayer(nn.Module):
             max_distance_of_filter = torch.max(tmp_distances)
             # print("the max value", max_distance_of_filter)
             # update max distance of layer
-            if max_distance_of_layer < max_distance_of_filter:
-                max_distance_of_layer = max_distance_of_filter
+            if self.max_distance_of_layer < max_distance_of_filter:
+                self.max_distance_of_layer = max_distance_of_filter
 
         # mean connection cost of a layer
         # mean from all non-nan values - todo - check why there are nan values, maybe cause of pruning??
@@ -234,7 +238,7 @@ class DecentLayer(nn.Module):
         #print("cc cat", cc)
         mean_value_of_layer = torch.nanmean(cc) #torch.tensor(cc)
         # normalise with max value to scale between 0 and 1
-        normalised_mean_value_of_layer = mean_value_of_layer / max_distance_of_layer+1e5
+        normalised_mean_value_of_layer = mean_value_of_layer / self.max_distance_of_layer+1e5
         
         return mean_value_of_layer, normalised_mean_value_of_layer # , max_cc
     
@@ -300,17 +304,29 @@ class DecentLayer(nn.Module):
         #        max_importance_of_layer = max_importance_of_weight
 
         try:
-            ci = torch.cat(ci)
-            max_importance_of_layer = torch.max(ci) # torch.max(torch.tensor(ci))
+            self.ci_layer = torch.cat(ci)
+            
+            # update after each pruning!! - best to do the pretrain without this loss?? then reset optimiser??
+            
+            # max_importance is calculated in update function
+            
+            
             # mean importance of a layer
             # mean from all non-nan values - todo - check why there are nan values, maybe cause of pruning??
-            mean_importance_of_layer = torch.nanmean(ci) # TODO, for the future torch.tensor(
+            mean_importance_of_layer = torch.nanmean(self.ci_layer) # TODO, for the future torch.tensor(
             # maybe zero should be included though ... also, since we didn't remove whole filters that do not connect to anything, maybe there are problems
             # normalise with max value to scale between 0 and 1
-            normalised_mean_importance_of_layer = mean_importance_of_layer / max_importance_of_layer+1e5
+           
         except Exception as e:
             print(ci)
             print(e)
+       
+        if self.max_importance_of_layer == None: # first round
+            print("should only happen once for each layer... update of max importance")
+            self.max_importance_of_layer = torch.max(self.ci_layer)
+        
+        normalised_mean_importance_of_layer = mean_importance_of_layer / self.max_importance_of_layer+1e5
+                 
         
         return mean_importance_of_layer, normalised_mean_importance_of_layer # ci, normalised_ci
     
@@ -526,7 +542,6 @@ class DecentLayer(nn.Module):
         
         # for each filter
         for i_f, f in enumerate(self.filter_list):
-            # for each channel
             
             # print("ms_in shape", f.ms_in.shape)
             for i_s in range(len(f.ms_in)):
@@ -570,6 +585,9 @@ class DecentLayer(nn.Module):
         # remove channels based on self.prune_keep
         # layerwise pruning - percentage of layer
         # =============================================================================
+        
+        # update 
+        self.max_importance_of_layer = torch.max(self.ci_layer) # torch.max(torch.tensor(ci))
         
         all_ci = []
         all_len = 0

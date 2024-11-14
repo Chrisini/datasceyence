@@ -354,7 +354,8 @@ class DecentNet(nn.Module):
         # this needs to happen at each step?? seems a bit much 
         self.update_normalised_channel_importance()
         
-        return 1 - torch.abs(self.cc - self.ci)
+        cc_ci = 1 - torch.abs(self.cc - self.ci)
+        return cc_ci
 
     def update(self, current_epoch):
         # =============================================================================
