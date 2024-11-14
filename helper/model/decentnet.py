@@ -329,22 +329,25 @@ class DecentNet(nn.Module):
         _, tmp_norm_cc = self.decent1x1.run_layer_connection_cost()
         self.cc.append(tmp_norm_cc)
         
+        # print("decentnet.py:", self.cc)
+        
         # fine
         self.cc = torch.mean(torch.tensor(self.cc))
         
     def update_normalised_channel_importance(self):
         
-        self.ci = []
-        # self.cc.append(self.decent1.run_layer_connection_cost()) # maybe not even needed ...
+        tmp_ci = []
         _, tmp_norm_ci = self.decent2.run_layer_channel_importance()
-        self.ci.append(tmp_norm_ci)
+        tmp_ci.append(tmp_norm_ci)
         _, tmp_norm_ci = self.decent3.run_layer_channel_importance()
-        self.ci.append(tmp_norm_ci)
+        tmp_ci.append(tmp_norm_ci)
         _, tmp_norm_ci = self.decent1x1.run_layer_channel_importance()
-        self.ci.append(tmp_norm_ci)
+        tmp_ci.append(tmp_norm_ci)
+        
+        # print("decentnet", tmp_ci)
         
         # fine
-        self.ci = torch.mean(torch.tensor(self.ci))
+        self.ci = torch.mean(torch.tensor(tmp_ci))
         
     def get_cc_and_ci_loss_term(self):
         
