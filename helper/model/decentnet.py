@@ -102,11 +102,13 @@ class DecentNet(nn.Module):
         # self.sigmoid = nn.Sigmoid()
 
         # init connection cost
+        """
         self.cc = []
         if self.new_cc_mode:
             self.update_new_connection_cost()
         else:
             self.update_connection_cost()
+        """
         
         
         # get a position in filter list
@@ -295,7 +297,8 @@ class DecentNet(nn.Module):
         ax.grid() # enable grid line
         fig.savefig(os.path.join(self.log_dir, f"connections_{self.ci_metric}_m{int(self.m_l2_plot[0])}_n{int(self.n_l2_plot[0])}_{str(current_epoch)}.png"))
     
-    def update_connection_cost(self):
+    """
+    def update_connection_cost(self): # the old one
         # this cc loss term is absolute crap!!!
         self.cc = []
         # self.cc.append(self.decent1.run_layer_connection_cost()) # maybe not even needed ...
@@ -308,57 +311,25 @@ class DecentNet(nn.Module):
         self.cc.append(tmp_cc)
         
         self.cc = torch.mean(torch.tensor(self.cc))
-        
-    def update_new_connection_cost(self):
-        # change new to norm
-        # todo list
-        # we need to get the max value of kernel magnitude of each layer
-        # we need to get the max value of manhattan distance of each layer (done)
-        # we have to normalise cc and md - add +e to not get zero!! (generally not important since we do not divide)
-        # we subtract them and get absolute value
-        # that is part of the loss term :) 
-        
-        # this should be updated after every pruning!!
-        
-        self.cc = []
-        # self.cc.append(self.decent1.run_layer_connection_cost()) # maybe not even needed ...
-        _, tmp_norm_cc = self.decent2.run_layer_connection_cost()
-        self.cc.append(tmp_norm_cc)
-        _, tmp_norm_cc = self.decent3.run_layer_connection_cost()
-        self.cc.append(tmp_norm_cc)
-        _, tmp_norm_cc = self.decent1x1.run_layer_connection_cost()
-        self.cc.append(tmp_norm_cc)
-        
-        # print("decentnet.py:", self.cc)
-        
-        # fine
-        self.cc = torch.mean(torch.tensor(self.cc))
-        
-    def update_normalised_channel_importance(self):
-        
-        tmp_ci = []
-        _, tmp_norm_ci = self.decent2.run_layer_channel_importance()
-        tmp_ci.append(tmp_norm_ci)
-        _, tmp_norm_ci = self.decent3.run_layer_channel_importance()
-        tmp_ci.append(tmp_norm_ci)
-        _, tmp_norm_ci = self.decent1x1.run_layer_channel_importance()
-        tmp_ci.append(tmp_norm_ci)
-        
-        # print("decentnet", tmp_ci)
-        
-        # fine
-        self.ci = torch.mean(torch.tensor(tmp_ci))
+    """
         
     def get_cc_and_ci_loss_term(self):
         
         # update of cc after each pruning (happening automatically)
         # update of ci every n steps?? or is it too much?? = kernel magnitude
         
-        # this needs to happen at each step?? seems a bit much 
-        self.update_normalised_channel_importance()
+        c_term_for_each_layer = []
         
-        cc_ci = 1 - torch.abs(self.cc - self.ci)
-        return cc_ci
+        c_term_for_layer = self.decent2.step()
+        c_term_for_each_layer.append(c_term_for_layer)
+        c_term_for_layer = self.decent3.step()
+        c_term_for_each_layer.append(c_term_for_layer)
+        c_term_for_layer = self.decent1x1.step()
+        c_term_for_each_layer.append(c_term_for_layer)
+
+        c_term_for_model = torch.mean(torch.tensor(c_term_for_each_layer))
+        
+        return c_term_for_model
 
     def update(self, current_epoch):
         # =============================================================================
@@ -369,8 +340,11 @@ class DecentNet(nn.Module):
         # update decent layers
         
         #self.decent1.update()
+        print("decent2-"*5)
         self.decent2.update()
+        print("decent3-"*5)
         self.decent3.update()
+        print("decent1x1-"*5)
         self.decent1x1.update()
         
         # visualisation
@@ -379,10 +353,10 @@ class DecentNet(nn.Module):
     
         # connection cost has to be calculated after pruning
         # self.cc which is updated is used for loss function
-        if self.new_cc_mode:
-            self.update_new_connection_cost()
-        else:
-            pass
+        #if self.new_cc_mode:
+        #    self.update_new_connection_cost()
+        #else:
+        #    pass
             #self.update_connection_cost()
         
         
