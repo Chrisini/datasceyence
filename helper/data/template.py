@@ -83,18 +83,24 @@ class TemplateDataLoaderWrapper():
         elif self.info["n_samples"]["train"] != 0:
             #train_indices = range(train_kwargs["train_size"])
             train_indices = random.sample(range(self.info["n_samples"]["train"]), train_kwargs["train_size"])
-            
+        
+        train_kwargs["train_size"] = len(train_indices)
+        
         if train_kwargs["val_size"] == -1:
             val_indices = range(self.info["n_samples"]["val"]) # all
         elif self.info["n_samples"]["val"] != 0: 
             # val_indices = range(train_kwargs["val_size"])
             val_indices = random.sample(range(self.info["n_samples"]["val"]), train_kwargs["val_size"])
             
+        train_kwargs["val_size"] = len(val_indices)
+            
         if train_kwargs["test_size"] == -1:
             test_indices = range(self.info["n_samples"]["test"]) # all
         elif self.info["n_samples"]["test"] != 0:
             # test_indices = range(train_kwargs["test_size"])
             test_indices = random.sample(range(self.info["n_samples"]["test"]), train_kwargs["test_size"])
+            
+        train_kwargs["test_size"] = len(test_indices)
         
         return train_indices, val_indices, test_indices
     

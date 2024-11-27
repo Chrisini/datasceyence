@@ -360,7 +360,7 @@ class DecentNet(nn.Module):
             #self.update_connection_cost()
         
         
-    def get_everything(self, current_epoch):
+    def get_everything(self, counter):
         
         # in this we have the channel importance!!
         d1 = self.decent1.get_everything()
@@ -386,7 +386,7 @@ class DecentNet(nn.Module):
         frames = [df1, df2, df3, df1x1]
         result = pd.concat(frames)
         
-        result.to_csv(os.path.join(self.log_dir, f'connections_{str(current_epoch)}.csv'), index=False)  
+        result.to_csv(os.path.join(self.log_dir, f'connections_{str(counter)}.csv'), index=False)  
         
         # return d1, d2, d3, d1x1
         
