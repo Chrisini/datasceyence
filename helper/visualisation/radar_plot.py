@@ -179,7 +179,7 @@ def radar_factory(num_vars, frame='circle'):
 def get_csv_data(path):
     
     # this is actually median
-    med_and_std_paths = glob.glob(os.path.join(path,"final_plots/mean_and_std_*.csv"))
+    med_and_std_paths = glob.glob(os.path.join(path,"filters/mean_and_std_*.csv"))
 
     
 

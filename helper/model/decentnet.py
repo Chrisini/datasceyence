@@ -84,7 +84,7 @@ class DecentNet(nn.Module):
         #self.tmp.classifier[1] = nn.Conv2d(512, 10, kernel_size=(3,3))
         
         # head
-        self.fc = nn.Linear(out_dim[-1], out_dim[-1])
+        # self.fc = nn.Linear(out_dim[-1], out_dim[-1])
     
         # activation
         self.mish1 = nn.Mish()
@@ -164,8 +164,9 @@ class DecentNet(nn.Module):
             output = x.data.register_hook(self.activations_hook)
             #'cannot register a hook on a tensor that doesn't require gradient'
         
-        
-        # global max pooling for MIL
+        #print("BASELINE INFO 1:", x.data.size()) # BASELINE INFO 1: torch.Size([8, 4, 22, 22])
+
+        # global max pooling for MIL - Global Average Pooling - https://arxiv.org/pdf/1312.4400 (nn.AvgPool2d())
         # https://discuss.pytorch.org/t/global-max-pooling/1345
         # Global Average Pooling is a pooling operation designed to replace fully connected layers in classical CNNs. 
         # The idea is to generate one feature map for each corresponding category of the classification task in the last mlpconv layer.
@@ -173,8 +174,14 @@ class DecentNet(nn.Module):
         # one needs to use the regular max pooling class with a kernel size equal to the size of the feature map at that point
         x.data = torch.nn.functional.max_pool2d(x.data, kernel_size=x.data.size()[2:])
         
+        # todo, check whether this actually makes sense!!
+        
+        # print("BASELINE INFO 2:", x.data.size()) # BASELINE INFO 2: torch.Size([8, 4, 1, 1])
+        
         # or flatten
         x.data = x.data.reshape(x.data.size(0), -1)
+        
+        # print("BASELINE INFO 3:", x.data.size()) BASELINE INFO 3: torch.Size([8, 4])
         
         # we still want the fc ???
         # x.data = self.fc(x.data) 
